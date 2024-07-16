@@ -222,8 +222,10 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     scrollView.abortAnimation();
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(data.mDestX, data.mDestY);
+      scrollView.handleSmoothScrollMomentumEvents();
     } else {
       scrollView.scrollTo(data.mDestX, data.mDestY);
+      ReactScrollViewHelper.emitScrollMomentumEndEvent(scrollView);
     }
   }
 
@@ -303,8 +305,10 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     scrollView.abortAnimation();
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(scrollView.getScrollX(), bottom);
+      scrollView.handleSmoothScrollMomentumEvents();
     } else {
       scrollView.scrollTo(scrollView.getScrollX(), bottom);
+      ReactScrollViewHelper.emitScrollMomentumEndEvent(scrollView);
     }
   }
 
