@@ -75,16 +75,6 @@ Binding::getInspectorDataForInstance(
   return ReadableNativeMap::newObjectCxxArgs(result);
 }
 
-constexpr static auto kReactFeatureFlagsJavaDescriptor =
-    "com/facebook/react/config/ReactFeatureFlags";
-
-static bool getFeatureFlagValue(const char* name) {
-  static const auto reactFeatureFlagsClass =
-      jni::findClassStatic(kReactFeatureFlagsJavaDescriptor);
-  const auto field = reactFeatureFlagsClass->getStaticField<jboolean>(name);
-  return reactFeatureFlagsClass->getStaticFieldValue(field);
-}
-
 void Binding::setPixelDensity(float pointScaleFactor) {
   pointScaleFactor_ = pointScaleFactor;
 }
@@ -356,8 +346,7 @@ void Binding::installFabricUIManager(
   std::shared_ptr<const ReactNativeConfig> config =
       std::make_shared<const ReactNativeConfigHolder>(reactNativeConfig);
 
-  enableFabricLogs_ =
-      config->getBool("react_fabric:enabled_android_fabric_logs");
+  enableFabricLogs_ = ReactNativeFeatureFlags::enableFabricLogs();
 
   if (enableFabricLogs_) {
     LOG(WARNING) << "Binding::installFabricUIManager() was called (address: "
@@ -404,9 +393,7 @@ void Binding::installFabricUIManager(
   reactNativeConfig_ = config;
 
   CoreFeatures::enablePropIteratorSetter =
-      getFeatureFlagValue("enableCppPropsIteratorSetter");
-  CoreFeatures::excludeYogaFromRawProps =
-      ReactNativeFeatureFlags::excludeYogaFromRawProps();
+      ReactNativeFeatureFlags::enableCppPropsIteratorSetter();
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
