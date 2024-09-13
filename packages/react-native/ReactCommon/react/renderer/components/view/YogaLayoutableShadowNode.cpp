@@ -149,7 +149,9 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     updateYogaProps();
   }
 
-  if (!getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode) && yogaNode_.style().display() != yoga::Display::Contents) {
+  bool isDisplayContents = yogaNode_.style().display() == yoga::Display::Contents;
+                        
+  if (!getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode) && !isDisplayContents) {
     for (auto& child : getChildren()) {
       if (auto layoutableChild = std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(child)) {
         runForEveryConcreteSubtree(layoutableChild, [&](const YogaLayoutableShadowNode::Shared subtreeRoot) {
@@ -162,11 +164,11 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     }
   }
   
-  if (yogaNode_.style().display() == yoga::Display::Contents) {
+  if (isDisplayContents) {
     yogaNode_.setChildren({});
   }
 
-  if (fragment.children || (yogaNode_.style().display() != yoga::Display::Contents && wasDisplayContents)) {
+  if (fragment.children || (!isDisplayContents && wasDisplayContents)) {
     updateYogaChildren();
   }
 
