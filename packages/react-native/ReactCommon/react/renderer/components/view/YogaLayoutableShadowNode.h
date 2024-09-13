@@ -116,7 +116,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    */
   void updateYogaChildrenOwnersIfNeeded();
 
-  void runForEveryConcreteSubtree(const YogaLayoutableShadowNode::Shared& node, std::function<void(const YogaLayoutableShadowNode::Shared& subtreeRoot)> fn) const;
+  void runForEveryConcreteSubtree(const YogaLayoutableShadowNode::Shared& node, std::invocable<const YogaLayoutableShadowNode::Shared&> auto fn) const;
 
   void initialize();
 

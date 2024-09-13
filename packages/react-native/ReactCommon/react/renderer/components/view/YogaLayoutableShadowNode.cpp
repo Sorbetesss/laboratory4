@@ -402,7 +402,7 @@ void YogaLayoutableShadowNode::replaceChild(
   ensureYogaChildrenLookFine();
 }
 
-void YogaLayoutableShadowNode::runForEveryConcreteSubtree(const YogaLayoutableShadowNode::Shared& node, std::function<void(const YogaLayoutableShadowNode::Shared& subtreeRoot)> fn) const {
+void YogaLayoutableShadowNode::runForEveryConcreteSubtree(const YogaLayoutableShadowNode::Shared& node, std::invocable<const YogaLayoutableShadowNode::Shared&> auto fn) const {
   if (node->yogaNode_.style().display() == yoga::Display::Contents) {
     for (const auto& childNode : node->getChildren()) {
       if (const auto& layoutableChildNode = std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(childNode)) {
