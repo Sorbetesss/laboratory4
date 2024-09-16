@@ -199,6 +199,8 @@ export type TextContentType =
   | 'birthdateDay'
   | 'birthdateMonth'
   | 'birthdateYear'
+  | 'cellularEID'
+  | 'cellularIMEI'
   | 'dateTime'
   | 'flightNumber'
   | 'shipmentTrackingNumber';
