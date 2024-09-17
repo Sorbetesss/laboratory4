@@ -138,6 +138,11 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    */
   void initialize();
 
+  /*
+   * Checks whether this node has its `display` property set to `contents`.
+   */
+  bool hasDisplayContentsStyle() const;
+    
   void setContentsLayoutMetrics(LayoutContext layoutContext);
 
   /*
