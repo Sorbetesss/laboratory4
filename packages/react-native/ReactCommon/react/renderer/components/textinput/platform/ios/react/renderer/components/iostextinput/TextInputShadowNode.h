@@ -33,6 +33,11 @@ class TextInputShadowNode final : public ConcreteViewShadowNode<
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
   TextInputShadowNode(
+      const ShadowNodeFragment& fragment,
+      const ShadowNodeFamily::Shared& family,
+      ShadowNodeTraits traits);
+                                      
+  TextInputShadowNode(
       const ShadowNode& sourceShadowNode,
       const ShadowNodeFragment& fragment);
 
@@ -62,6 +67,11 @@ class TextInputShadowNode final : public ConcreteViewShadowNode<
   Float baseline(const LayoutContext& layoutContext, Size size) const override;
 
  private:
+  /*
+   * Sets up initial traits on the node.
+   */
+  void initialize();
+
   /*
    * Creates a `State` object if needed.
    */

@@ -71,7 +71,6 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     : LayoutableShadowNode(fragment, family, traits),
       yogaConfig_(FabricDefaultYogaLog),
       yogaNode_(&initializeYogaConfig(yogaConfig_)) {
-  initialize();
   yogaNode_.setContext(this);
 
   if (getTraits().check(ShadowNodeTraits::Trait::MeasurableYogaNode)) {
@@ -114,8 +113,6 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
               .yogaNode_.isDirty() == yogaNode_.isDirty() &&
       "Yoga node must inherit dirty flag.");
 #endif
-                        
-  initialize();
 
   YGConfigConstRef previousConfig =
       &static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode)
@@ -173,13 +170,6 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   }
 
   ensureConsistency();
-}
-
-void YogaLayoutableShadowNode::initialize() {
-  if (std::static_pointer_cast<const YogaStylableProps>(getProps())->yogaStyle.display() == yoga::Display::Contents) {
-    traits_.unset(ShadowNodeTraits::FormsStackingContext);
-    traits_.unset(ShadowNodeTraits::FormsView);
-  }
 }
 
 void YogaLayoutableShadowNode::cleanLayout() {

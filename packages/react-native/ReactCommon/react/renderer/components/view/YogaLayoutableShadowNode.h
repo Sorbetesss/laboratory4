@@ -133,12 +133,6 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   void runForEveryConcreteSubtree(const YogaLayoutableShadowNode::Shared& node, std::invocable<const YogaLayoutableShadowNode::Shared&> auto fn) const;
 
   /*
-   * Updates the traits on the node based on whether `display` style is set to
-   * `contents` to reflect that it does not form a view.
-   */
-  void initialize();
-
-  /*
    * Checks whether this node has its `display` property set to `contents`.
    */
   bool hasDisplayContentsStyle() const;
