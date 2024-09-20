@@ -296,29 +296,29 @@ void YogaLayoutableShadowNode::replaceChild(
     const ShadowNode& oldChild,
     const ShadowNode::Shared& newChild,
     size_t suggestedIndex) {
-    auto ancestors = newChild->getFamily().getAncestors(*this);
-    const YogaLayoutableShadowNode* layoutableOldChild = nullptr;
-    YogaLayoutableShadowNode::Shared layoutableNewChild = nullptr;
-        
-    if (ancestors.size() > 1) {
-      const auto& childToClone = getChildren()[ancestors[0].second];
-
-      auto clonedDirectChild = childToClone->cloneTree(oldChild.getFamily(), [&](const ShadowNode& node) {
-        return std::const_pointer_cast<ShadowNode>(newChild);
-      });
+  auto ancestors = newChild->getFamily().getAncestors(*this);
+  const YogaLayoutableShadowNode* layoutableOldChild = nullptr;
+  YogaLayoutableShadowNode::Shared layoutableNewChild = nullptr;
       
-      layoutableOldChild = dynamic_cast<const YogaLayoutableShadowNode*>(childToClone.get());
-      layoutableNewChild = std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(clonedDirectChild);
-      LayoutableShadowNode::replaceChild(*childToClone, clonedDirectChild, suggestedIndex);
-    } else {
-      layoutableOldChild = dynamic_cast<const YogaLayoutableShadowNode*>(&oldChild);
-      layoutableNewChild = std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(newChild);
-      LayoutableShadowNode::replaceChild(oldChild, newChild, suggestedIndex);
-    }
+  if (ancestors.size() > 1) {
+    const auto& childToClone = getChildren()[ancestors[0].second];
 
-    if (hasDisplayContentsStyle()) {
-      return;
-    }
+    auto clonedDirectChild = childToClone->cloneTree(oldChild.getFamily(), [&](const ShadowNode& node) {
+      return std::const_pointer_cast<ShadowNode>(newChild);
+    });
+    
+    layoutableOldChild = dynamic_cast<const YogaLayoutableShadowNode*>(childToClone.get());
+    layoutableNewChild = std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(clonedDirectChild);
+    LayoutableShadowNode::replaceChild(*childToClone, clonedDirectChild, suggestedIndex);
+  } else {
+    layoutableOldChild = dynamic_cast<const YogaLayoutableShadowNode*>(&oldChild);
+    layoutableNewChild = std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(newChild);
+    LayoutableShadowNode::replaceChild(oldChild, newChild, suggestedIndex);
+  }
+
+  if (hasDisplayContentsStyle()) {
+    return;
+  }
     
   ensureUnsealed();
   ensureYogaChildrenLookFine();
