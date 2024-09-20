@@ -346,15 +346,17 @@ void YogaLayoutableShadowNode::replaceChild(
     // oldChild does not exist as part of our node
     return;
   }
-yogaNode_.insertChild()
+
   if (layoutableNewChild) {
     // Both children are layoutable, replace the old one with the new one
     react_native_assert(layoutableNewChild->yogaNode_.getOwner() == nullptr);
     layoutableNewChild->yogaNode_.setOwner(&yogaNode_);
     
     auto currentItemIter = yogaLayoutableChildren_.begin();
+    size_t currentItemIndex = 0;
     while (currentItemIter != yogaLayoutableChildren_.end() && &*currentItemIter->directChild != layoutableOldChild) {
       currentItemIter++;
+      currentItemIndex++;
     }
     
     runForEveryConcreteSubtree(layoutableNewChild, [&](const YogaLayoutableShadowNode::Shared subtreeRoot) {
@@ -367,22 +369,19 @@ yogaNode_.insertChild()
           .directChild = layoutableNewChild,
           .yogaChild = subtreeRoot,
         };
+        yogaNode_.replaceChild(&subtreeRoot->yogaNode_, currentItemIndex++);
       } else {
         yogaLayoutableChildren_.insert(currentItemIter++, {
           .directChild = layoutableNewChild,
           .yogaChild = subtreeRoot,
         });
+        yogaNode_.insertChild(&subtreeRoot->yogaNode_, currentItemIndex++);
       }
     });
     
     while (currentItemIter != yogaLayoutableChildren_.end() && &*currentItemIter->directChild == layoutableOldChild) {
+      yogaNode_.removeChild(&currentItemIter->yogaChild->yogaNode_);
       currentItemIter = yogaLayoutableChildren_.erase(currentItemIter);
-    }
-    
-    yogaNode_.setChildren({});
-    auto index = 0;
-    for (auto& layoutableChild : yogaLayoutableChildren_) {
-      yogaNode_.insertChild(&layoutableChild.yogaChild->yogaNode_, index++);
     }
   } else {
     while (oldChildIter != yogaLayoutableChildren_.end() && (*oldChildIter).directChild.get() == &oldChild) {
