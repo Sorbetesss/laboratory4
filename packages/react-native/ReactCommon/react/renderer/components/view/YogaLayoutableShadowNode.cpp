@@ -346,7 +346,7 @@ void YogaLayoutableShadowNode::replaceChild(
     // oldChild does not exist as part of our node
     return;
   }
-
+yogaNode_.insertChild()
   if (layoutableNewChild) {
     // Both children are layoutable, replace the old one with the new one
     react_native_assert(layoutableNewChild->yogaNode_.getOwner() == nullptr);
@@ -647,7 +647,7 @@ YogaLayoutableShadowNode& YogaLayoutableShadowNode::cloneChildInPlace(
 
   ShadowNode* result = &*clonedChildNode;
   
-  // entire peth will be cloned for each child
+  // entire path will be cloned for each child
   if (&*child.directChild != &*child.yogaChild) {
     clonedChildNode = childNode.cloneTree(child.yogaChild->getFamily(), [&](const ShadowNode& oldNode) {
       const auto clone = oldNode.clone({.state = oldNode.getState()});
