@@ -45,6 +45,15 @@ AndroidTextInputShadowNode::AndroidTextInputShadowNode(
   }
 }
 
+void AndroidTextInputShadowNode::initialize() {
+  if (yogaNode_.style().display() == yoga::Display::Contents) {
+    yogaNode_.style().setDisplay(yoga::Display::None);
+  }
+
+  traits_.set(ShadowNodeTraits::Trait::FormsView);
+  traits_.set(ShadowNodeTraits::Trait::FormsStackingContext);
+}
+
 void AndroidTextInputShadowNode::setContextContainer(
     ContextContainer* contextContainer) {
   ensureUnsealed();
