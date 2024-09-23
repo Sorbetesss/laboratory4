@@ -38,8 +38,7 @@ YG_ENUM_DECL(
 YG_ENUM_DECL(
     YGDisplay,
     YGDisplayFlex,
-    YGDisplayNone,
-    YGDisplayContents)
+    YGDisplayNone)
 
 YG_ENUM_DECL(
     YGEdge,

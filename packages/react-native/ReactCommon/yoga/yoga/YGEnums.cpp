@@ -61,8 +61,6 @@ const char* YGDisplayToString(const YGDisplay value) {
       return "flex";
     case YGDisplayNone:
       return "none";
-    case YGDisplayContents:
-      return "contents";
   }
   return "unknown";
 }

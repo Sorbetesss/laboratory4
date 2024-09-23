@@ -86,12 +86,12 @@ YogaStylableProps::YogaStylableProps(
       sourceProps.yogaStyle.overflow(),
       yogaStyle.overflow()));
 
-  yogaStyle.setDisplay(convertRawProp(
-      context,
-      rawProps,
-      "display",
-      sourceProps.yogaStyle.display(),
-      yogaStyle.display()));
+ yogaStyle.setDisplay(convertRawProp(
+     context,
+     rawProps,
+     "display",
+     sourceProps.yogaStyle.display(),
+     yogaStyle.display()));
 
   yogaStyle.setFlex(convertRawProp(
       context,
@@ -577,7 +577,7 @@ SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
       debugStringConvertibleItem(
           "overflow", yogaStyle.overflow(), defaultYogaStyle.overflow()),
       debugStringConvertibleItem(
-          "display", yogaStyle.display(), defaultYogaStyle.display()),
+          "display", display, DisplayType::Flex),
       debugStringConvertibleItem(
           "flex", yogaStyle.flex(), defaultYogaStyle.flex()),
       debugStringConvertibleItem(
@@ -875,6 +875,12 @@ void YogaStylableProps::convertRawPropAliases(
       "paddingBlockEnd",
       sourceProps.paddingBlockEnd,
       yoga::value::undefined());
+  display = convertRawProp(
+      context,
+      rawProps,
+      "display",
+      sourceProps.display,
+      DisplayType::Flex);
 }
 
 } // namespace facebook::react

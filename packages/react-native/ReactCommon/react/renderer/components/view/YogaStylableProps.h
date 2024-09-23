@@ -12,6 +12,7 @@
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
+#include <react/renderer/core/LayoutPrimitives.h>
 
 namespace facebook::react {
 
@@ -58,6 +59,10 @@ class YogaStylableProps : public Props {
 
   yoga::Style::Length paddingBlockStart;
   yoga::Style::Length paddingBlockEnd;
+
+  // We need to store the `display` property separately due to `contents` not
+  // being a valid value in Yoga.
+  DisplayType display = DisplayType::Flex;
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 

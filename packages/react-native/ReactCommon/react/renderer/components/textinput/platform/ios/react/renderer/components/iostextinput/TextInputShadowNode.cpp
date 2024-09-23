@@ -47,7 +47,7 @@ TextInputShadowNode::TextInputShadowNode(
 }
 
 void TextInputShadowNode::initialize() {
-  if (yogaNode_.style().display() == yoga::Display::Contents) {
+  if (static_cast<const YogaStylableProps*>(&*props_)->display == DisplayType::Contents) {
     traits_.set(ShadowNodeTraits::Trait::Hidden);
   } else {
     traits_.unset(ShadowNodeTraits::Trait::Hidden);

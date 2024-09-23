@@ -418,7 +418,7 @@ void YogaLayoutableShadowNode::runForEveryConcreteSubtree(const YogaLayoutableSh
 }
 
 bool YogaLayoutableShadowNode::hasDisplayContentsStyle() const {
-  return yogaNode_.style().display() == yoga::Display::Contents;
+  return static_cast<const YogaStylableProps*>(&*props_)->display == DisplayType::Contents;
 }
 
 bool YogaLayoutableShadowNode::doesOwn(
@@ -559,6 +559,17 @@ void YogaLayoutableShadowNode::updateYogaProps() {
   }
   if (result.padding(yoga::Edge::Bottom).isUndefined()) {
     result.setPadding(yoga::Edge::Bottom, props.paddingBlockEnd);
+  }
+
+  switch (props.display) {
+    case DisplayType::Flex:
+    case DisplayType::Inline:
+    case DisplayType::Contents:
+      result.setDisplay(yoga::Display::Flex);
+      break;
+    case DisplayType::None:
+      result.setDisplay(yoga::Display::None);
+      break;
   }
 
   return result;
@@ -788,6 +799,7 @@ void YogaLayoutableShadowNode::layoutTree(
   // YogaLayoutableShadowNode::layout
   if (yogaNode_.getHasNewLayout()) {
     auto layoutMetrics = layoutMetricsFromYogaNode(yogaNode_);
+    layoutMetrics.displayType = static_cast<const YogaStylableProps*>(&*props_)->display;
     layoutMetrics.pointScaleFactor = layoutContext.pointScaleFactor;
     layoutMetrics.wasLeftAndRightSwapped = swapLeftAndRight;
     setLayoutMetrics(layoutMetrics);
@@ -856,6 +868,7 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
       childNode.ensureUnsealed();
 
       auto newLayoutMetrics = layoutMetricsFromYogaNode(*childYogaNode);
+      newLayoutMetrics.displayType = static_cast<const YogaStylableProps*>(&*props_)->display;
       newLayoutMetrics.pointScaleFactor = layoutContext.pointScaleFactor;
       newLayoutMetrics.wasLeftAndRightSwapped =
           layoutContext.swapLeftAndRightInRTL &&

@@ -131,7 +131,6 @@ RCTDisplayType RCTReactDisplayTypeFromYogaDisplayType(YGDisplay displayType)
     case YGDisplayFlex:
       return RCTDisplayTypeFlex;
     case YGDisplayNone:
-    case YGDisplayContents:
       return RCTDisplayTypeNone;
   }
 }
