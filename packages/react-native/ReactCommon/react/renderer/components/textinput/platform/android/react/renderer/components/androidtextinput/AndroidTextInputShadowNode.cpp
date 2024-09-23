@@ -46,12 +46,11 @@ AndroidTextInputShadowNode::AndroidTextInputShadowNode(
 }
 
 void AndroidTextInputShadowNode::initialize() {
-  if (yogaNode_.style().display() == yoga::Display::Contents) {
+  // TODO: seems not to work after changes with traits
+  if (static_cast<const YogaStylableProps*>(&*props_)->display == DisplayType::Contents) {
     yogaNode_.style().setDisplay(yoga::Display::None);
   }
 
-  traits_.set(ShadowNodeTraits::Trait::FormsView);
-  traits_.set(ShadowNodeTraits::Trait::FormsStackingContext);
   traits_.unset(ShadowNodeTraits::Trait::ForceViewFlattening);
 }
 
