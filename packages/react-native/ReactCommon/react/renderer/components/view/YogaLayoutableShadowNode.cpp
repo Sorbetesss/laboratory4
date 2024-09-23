@@ -140,8 +140,6 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
             .yogaTreeHasBeenConfigured_;
   }
                         
-  bool wasDisplayContents = hasDisplayContentsStyle();
-
   if (fragment.props) {
     updateYogaProps();
   }
@@ -151,7 +149,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   if (!getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode) && !isDisplayContents) {
     for (auto& child : getChildren()) {
       if (auto layoutableChild = std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(child)) {
-        runForEveryConcreteSubtree(layoutableChild, [&](const YogaLayoutableShadowNode::Shared subtreeRoot) {
+        runForEveryConcreteSubtree(layoutableChild, [&](const YogaLayoutableShadowNode::Shared& subtreeRoot) {
           yogaLayoutableChildren_.push_back({
             .directChild = layoutableChild,
             .yogaChild = subtreeRoot,
@@ -165,7 +163,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     yogaNode_.setChildren({});
   }
 
-  if (fragment.children || (!isDisplayContents && wasDisplayContents)) {
+  if (fragment.children || (!isDisplayContents && static_cast<const YogaLayoutableShadowNode&>(sourceShadowNode).hasDisplayContentsStyle())) {
     updateYogaChildren();
   }
 
@@ -213,10 +211,6 @@ void YogaLayoutableShadowNode::appendYogaChild(
 }
 
 void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
-  if (hasDisplayContentsStyle()) {
-    return;
-  }
-    
   ensureUnsealed();
   ensureYogaChildrenLookFine();
 
@@ -224,6 +218,10 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
   react_native_assert(
       !getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode));
 
+  if (hasDisplayContentsStyle()) {
+    return;
+  }
+    
   auto childNode =
       std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(getChildren().at(index));
 
@@ -832,7 +830,7 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
   // Reading data from a dirtied node does not make sense.
   react_native_assert(!yogaNode_.isDirty());
 
-  for (auto child : yogaLayoutableChildren_) {
+  for (const auto& child : yogaLayoutableChildren_) {
     auto childYogaNode = &child.yogaChild->yogaNode_;
     auto& childNode = shadowNodeFromContext(childYogaNode);
 
