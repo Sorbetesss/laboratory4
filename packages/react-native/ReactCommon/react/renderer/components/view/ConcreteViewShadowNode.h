@@ -110,14 +110,6 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
     } else {
       BaseShadowNode::traits_.unset(ShadowNodeTraits::Trait::Hidden);
     }
-      
-    if (props.yogaStyle.display() == yoga::Display::Contents) {
-      BaseShadowNode::traits_.unset(ShadowNodeTraits::FormsStackingContext);
-      BaseShadowNode::traits_.unset(ShadowNodeTraits::FormsView);
-    } else {
-      BaseShadowNode::traits_.set(ShadowNodeTraits::FormsStackingContext);
-      BaseShadowNode::traits_.set(ShadowNodeTraits::FormsView);
-    }
 
     // `zIndex` is only defined for non-`static` positioned views.
     if (props.yogaStyle.positionType() != yoga::PositionType::Static) {

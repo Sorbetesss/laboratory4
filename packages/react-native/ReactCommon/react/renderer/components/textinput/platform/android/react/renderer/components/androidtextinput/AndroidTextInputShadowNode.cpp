@@ -52,6 +52,7 @@ void AndroidTextInputShadowNode::initialize() {
 
   traits_.set(ShadowNodeTraits::Trait::FormsView);
   traits_.set(ShadowNodeTraits::Trait::FormsStackingContext);
+  traits_.unset(ShadowNodeTraits::Trait::ForceViewFlattening);
 }
 
 void AndroidTextInputShadowNode::setContextContainer(

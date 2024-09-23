@@ -72,11 +72,6 @@ void ViewShadowNode::initialize() noexcept {
       !viewProps.backgroundImage.empty() ||
       HostPlatformViewTraitsInitializer::formsView(viewProps) ||
       viewProps.outlineWidth > 0;
-    
-    if (viewProps.yogaStyle.display() == yoga::Display::Contents) {
-        formsStackingContext = false;
-        formsView = false;
-    }
 
   if (formsView) {
     traits_.set(ShadowNodeTraits::Trait::FormsView);

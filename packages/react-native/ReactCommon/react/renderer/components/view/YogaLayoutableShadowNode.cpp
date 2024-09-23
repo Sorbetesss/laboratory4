@@ -90,6 +90,12 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   updateYogaChildren();
 
   ensureConsistency();
+          
+  if (hasDisplayContentsStyle()) {
+    traits_.set(ShadowNodeTraits::Trait::ForceViewFlattening);
+  } else {
+    traits_.unset(ShadowNodeTraits::Trait::ForceViewFlattening);
+  }
 }
 
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(
@@ -168,6 +174,12 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   }
 
   ensureConsistency();
+                        
+  if (hasDisplayContentsStyle()) {
+    traits_.set(ShadowNodeTraits::Trait::ForceViewFlattening);
+  } else {
+    traits_.unset(ShadowNodeTraits::Trait::ForceViewFlattening);
+  }
 }
 
 void YogaLayoutableShadowNode::cleanLayout() {
@@ -317,7 +329,7 @@ void YogaLayoutableShadowNode::replaceChild(
   if (hasDisplayContentsStyle()) {
     return;
   }
-    
+
   ensureUnsealed();
   ensureYogaChildrenLookFine();
 
