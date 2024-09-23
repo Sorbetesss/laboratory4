@@ -230,10 +230,8 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
   react_native_assert(
       !getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode));
 
-  if (hasDisplayContentsStyle()) {
-    return;
-  }
-    
+  react_native_assert(!hasDisplayContentsStyle());
+
   auto childNode =
       std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(getChildren().at(index));
 
