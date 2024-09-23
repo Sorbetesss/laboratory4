@@ -164,7 +164,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
       }
     }
   }
-  
+
   if (isDisplayContents) {
     yogaNode_.setChildren({});
   }
@@ -445,21 +445,11 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
   if (hasDisplayContentsStyle()) {
     return;
   }
-    
+
   ensureUnsealed();
-    
-  size_t newChildrenSize = 0;
-  
-  for (auto& child : getChildren()) {
-    if (auto layoutableChild = std::dynamic_pointer_cast<const YogaLayoutableShadowNode>(child)) {
-      runForEveryConcreteSubtree(layoutableChild, [&](const YogaLayoutableShadowNode::Shared subtreeRoot) {
-        newChildrenSize++;
-      });
-    }
-  }
 
   bool isClean = !yogaNode_.isDirty() &&
-      newChildrenSize == yogaNode_.getChildren().size();
+      yogaLayoutableChildren_.size() == yogaNode_.getChildren().size();
 
   auto oldYogaChildren =
       isClean ? yogaNode_.getChildren() : std::vector<yoga::Node*>{};
