@@ -407,6 +407,11 @@ inline void fromRawValue(
     result = yoga::Display::None;
     return;
   }
+  if (stringValue == "contents") {
+    // `display: contents` is implemented on React Native side.
+    result = yoga::Display::Flex;
+    return;
+  }
   LOG(ERROR) << "Could not parse yoga::Display: " << stringValue;
 }
 

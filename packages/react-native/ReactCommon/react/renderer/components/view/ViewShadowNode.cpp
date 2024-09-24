@@ -54,7 +54,7 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.opacity != 1.0 || viewProps.transform != Transform{} ||
       (viewProps.zIndex.has_value() &&
        viewProps.yogaStyle.positionType() != yoga::PositionType::Static) ||
-      viewProps.yogaStyle.display() == yoga::Display::None ||
+      viewProps.display == DisplayType::None ||
       viewProps.getClipsContentToBounds() || viewProps.events.bits.any() ||
       isColorMeaningful(viewProps.shadowColor) ||
       viewProps.accessibilityElementsHidden ||
