@@ -43,7 +43,11 @@ TextInputProps::TextInputProps(
           rawProps,
           "onChangeSync",
           sourceProps.onChangeSync,
-          {})){};
+          {})) {
+  if (display == DisplayType::Contents) {
+    display = DisplayType::None;
+  }
+};
 
 TextAttributes TextInputProps::getEffectiveTextAttributes(
     Float fontSizeMultiplier) const {

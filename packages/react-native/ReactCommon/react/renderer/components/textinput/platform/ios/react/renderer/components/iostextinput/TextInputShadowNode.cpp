@@ -21,17 +21,9 @@ namespace facebook::react {
 extern const char TextInputComponentName[] = "TextInput";
 
 TextInputShadowNode::TextInputShadowNode(
-    const ShadowNodeFragment& fragment,
-    const ShadowNodeFamily::Shared& family,
-    ShadowNodeTraits traits) : ConcreteViewShadowNode(fragment, family, traits) {
-  initialize();
-}
-
-TextInputShadowNode::TextInputShadowNode(
     const ShadowNode& sourceShadowNode,
     const ShadowNodeFragment& fragment)
     : ConcreteViewShadowNode(sourceShadowNode, fragment) {
-  initialize();
   auto& sourceTextInputShadowNode =
       static_cast<const TextInputShadowNode&>(sourceShadowNode);
 
@@ -43,14 +35,6 @@ TextInputShadowNode::TextInputShadowNode(
       // to stop Yoga from traversing it.
       cleanLayout();
     }
-  }
-}
-
-void TextInputShadowNode::initialize() {
-  if (static_cast<const YogaStylableProps*>(&*props_)->display == DisplayType::Contents) {
-    traits_.set(ShadowNodeTraits::Trait::Hidden);
-  } else {
-    traits_.unset(ShadowNodeTraits::Trait::Hidden);
   }
 }
 

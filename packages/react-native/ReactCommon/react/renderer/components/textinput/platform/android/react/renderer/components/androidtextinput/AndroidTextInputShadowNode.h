@@ -68,10 +68,6 @@ class AndroidTextInputShadowNode final
 
   Float baseline(const LayoutContext& layoutContext, Size size) const override;
 
-  /*
-   * Sets up initial traits and styles on the node.
-   */
-  void initialize();
  private:
   ContextContainer* contextContainer_{};
 

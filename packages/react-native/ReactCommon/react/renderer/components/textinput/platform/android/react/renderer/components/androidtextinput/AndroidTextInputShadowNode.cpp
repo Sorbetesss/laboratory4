@@ -45,15 +45,6 @@ AndroidTextInputShadowNode::AndroidTextInputShadowNode(
   }
 }
 
-void AndroidTextInputShadowNode::initialize() {
-  // TODO: seems not to work after changes with traits
-  if (static_cast<const YogaStylableProps*>(&*props_)->display == DisplayType::Contents) {
-    yogaNode_.style().setDisplay(yoga::Display::None);
-  }
-
-  traits_.unset(ShadowNodeTraits::Trait::ForceViewFlattening);
-}
-
 void AndroidTextInputShadowNode::setContextContainer(
     ContextContainer* contextContainer) {
   ensureUnsealed();
