@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bce0548a9e58299746c75aad95a25275>>
+ * @generated SignedSource<<b4d0cfe00218add9f769183c4f741261>>
  */
 
 /**
@@ -57,6 +57,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun destroyFabricSurfacesInReactInstanceManager(): Boolean = accessor.destroyFabricSurfacesInReactInstanceManager()
+
+  /**
+   * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
+   */
+  @JvmStatic
+  public fun disableMountItemReorderingAndroid(): Boolean = accessor.disableMountItemReorderingAndroid()
 
   /**
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.

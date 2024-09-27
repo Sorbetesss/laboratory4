@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ea2c2d19e83630b549e719057cd1982e>>
+ * @generated SignedSource<<4699faf8e9d38d2abe407d3cf9fe8963>>
  */
 
 /**
@@ -61,6 +61,11 @@ class ReactNativeFeatureFlags {
    * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
    */
   RN_EXPORT static bool destroyFabricSurfacesInReactInstanceManager();
+
+  /**
+   * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
+   */
+  RN_EXPORT static bool disableMountItemReorderingAndroid();
 
   /**
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.

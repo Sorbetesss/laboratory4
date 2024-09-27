@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c9497d9d49c14ab537fd8b337f1c5836>>
+ * @generated SignedSource<<c63f2431dfe22a87d3c552b4092d1439>>
  * @flow strict
  */
 
@@ -54,6 +54,7 @@ export type ReactNativeFeatureFlags = {
   batchRenderingUpdatesInEventLoop: Getter<boolean>,
   completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
   destroyFabricSurfacesInReactInstanceManager: Getter<boolean>,
+  disableMountItemReorderingAndroid: Getter<boolean>,
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
   enableAndroidLineHeightCentering: Getter<boolean>,
   enableAndroidMixBlendModeProp: Getter<boolean>,
@@ -205,6 +206,10 @@ export const completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean> =
  * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
  */
 export const destroyFabricSurfacesInReactInstanceManager: Getter<boolean> = createNativeFlagGetter('destroyFabricSurfacesInReactInstanceManager', false);
+/**
+ * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
+ */
+export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFlagGetter('disableMountItemReorderingAndroid', false);
 /**
  * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
  */

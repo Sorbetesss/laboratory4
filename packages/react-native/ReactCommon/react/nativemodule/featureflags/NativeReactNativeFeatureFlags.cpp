@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2b484558d552981e4ec0644d75849dde>>
+ * @generated SignedSource<<6a783825a3ee81f351c42df3a853edd3>>
  */
 
 /**
@@ -60,6 +60,11 @@ bool NativeReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAnd
 bool NativeReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager();
+}
+
+bool NativeReactNativeFeatureFlags::disableMountItemReorderingAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS(
