@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aaa516b2c719cb871f08c65bd7ce072f>>
+ * @generated SignedSource<<487fdb2eca1a5a12b12ac076d4a8f148>>
  */
 
 /**
@@ -30,6 +30,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool batchRenderingUpdatesInEventLoop() = 0;
   virtual bool completeReactInstanceCreationOnBgThreadOnAndroid() = 0;
   virtual bool destroyFabricSurfacesInReactInstanceManager() = 0;
+  virtual bool disableMountItemReorderingAndroid() = 0;
   virtual bool enableAlignItemsBaselineOnFabricIOS() = 0;
   virtual bool enableAndroidLineHeightCentering() = 0;
   virtual bool enableAndroidMixBlendModeProp() = 0;

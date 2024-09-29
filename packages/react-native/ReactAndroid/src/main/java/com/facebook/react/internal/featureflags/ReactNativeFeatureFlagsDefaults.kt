@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8155a9c1309145fefdb19feb33c241db>>
+ * @generated SignedSource<<c12808c9b5a206d2671fb42b296bd469>>
  */
 
 /**
@@ -32,6 +32,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = false
 
   override fun destroyFabricSurfacesInReactInstanceManager(): Boolean = false
+
+  override fun disableMountItemReorderingAndroid(): Boolean = false
 
   override fun enableAlignItemsBaselineOnFabricIOS(): Boolean = true
 

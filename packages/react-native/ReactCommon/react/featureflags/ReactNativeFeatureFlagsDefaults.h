@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fb3d7a930222a40e9a8c377989713b07>>
+ * @generated SignedSource<<6be2ee3001db2fee84c216e5520131fe>>
  */
 
 /**
@@ -44,6 +44,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool destroyFabricSurfacesInReactInstanceManager() override {
+    return false;
+  }
+
+  bool disableMountItemReorderingAndroid() override {
     return false;
   }
 

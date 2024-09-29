@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5e4e474b62996caec15bbf8af9622a0a>>
+ * @generated SignedSource<<3f5ada38e8e379f0a74ecbd9f7fe58c6>>
  */
 
 /**
@@ -29,6 +29,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
+  private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
   private var enableAndroidLineHeightCenteringCache: Boolean? = null
   private var enableAndroidMixBlendModePropCache: Boolean? = null
@@ -125,6 +126,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.destroyFabricSurfacesInReactInstanceManager()
       accessedFeatureFlags.add("destroyFabricSurfacesInReactInstanceManager")
       destroyFabricSurfacesInReactInstanceManagerCache = cached
+    }
+    return cached
+  }
+
+  override fun disableMountItemReorderingAndroid(): Boolean {
+    var cached = disableMountItemReorderingAndroidCache
+    if (cached == null) {
+      cached = currentProvider.disableMountItemReorderingAndroid()
+      accessedFeatureFlags.add("disableMountItemReorderingAndroid")
+      disableMountItemReorderingAndroidCache = cached
     }
     return cached
   }

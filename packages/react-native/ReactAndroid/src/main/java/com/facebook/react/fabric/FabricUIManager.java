@@ -158,7 +158,7 @@ public class FabricUIManager
     FabricSoLoader.staticInit();
   }
 
-  @Nullable private Binding mBinding;
+  @Nullable private FabricUIManagerBinding mBinding;
   @NonNull private final ReactApplicationContext mReactApplicationContext;
   @NonNull private final MountingManager mMountingManager;
   @NonNull private final EventDispatcher mEventDispatcher;
@@ -328,12 +328,11 @@ public class FabricUIManager
             mReactApplicationContext, context, surfaceHandler.getModuleName(), rootTag);
     mMountingManager.startSurface(rootTag, reactContext, rootView);
 
-    surfaceHandler.setSurfaceId(rootTag);
-    surfaceHandler.setMountable(rootView != null);
     if (!(surfaceHandler instanceof SurfaceHandlerBinding)) {
       throw new IllegalArgumentException("Invalid SurfaceHandler");
     }
-    mBinding.startSurfaceWithSurfaceHandler((SurfaceHandlerBinding) surfaceHandler);
+    mBinding.startSurfaceWithSurfaceHandler(
+        rootTag, (SurfaceHandlerBinding) surfaceHandler, rootView != null);
   }
 
   public void attachRootView(final SurfaceHandler surfaceHandler, final View rootView) {
@@ -873,7 +872,7 @@ public class FabricUIManager
     }
   }
 
-  public void setBinding(Binding binding) {
+  public void setBinding(FabricUIManagerBinding binding) {
     mBinding = binding;
   }
 
@@ -1272,7 +1271,7 @@ public class FabricUIManager
                   public void run() {
                     mMountNotificationScheduled = false;
 
-                    final @Nullable Binding binding = mBinding;
+                    final @Nullable FabricUIManagerBinding binding = mBinding;
                     if (binding == null || mDestroyed) {
                       mMountedSurfaceIds.clear();
                       return;
