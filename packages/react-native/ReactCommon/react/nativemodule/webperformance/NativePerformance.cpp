@@ -120,11 +120,11 @@ double NativePerformance::now(jsi::Runtime& /*rt*/) {
   return JSExecutor::performanceNow();
 }
 
-void NativePerformance::mark(
+double NativePerformance::mark(
     jsi::Runtime& rt,
     std::string name,
-    double startTime) {
-  PerformanceEntryReporter::getInstance()->reportMark(name, startTime);
+    std::optional<double> startTime) {
+  auto entry = PerformanceEntryReporter::getInstance()->reportMark(name, startTime);
 
 #ifdef WITH_PERFETTO
   if (TRACE_EVENT_CATEGORY_ENABLED("react-native")) {
@@ -136,9 +136,10 @@ void NativePerformance::mark(
         performanceNowToPerfettoTraceTime(startTime));
   }
 #endif
+  return entry.startTime;
 }
 
-void NativePerformance::measure(
+std::vector<double> NativePerformance::measure(
     jsi::Runtime& rt,
     std::string name,
     double startTime,
@@ -153,7 +154,7 @@ void NativePerformance::measure(
       eventName, (uint64_t)startTime, (uint64_t)endTime, trackName);
 #endif
 
-  PerformanceEntryReporter::getInstance()->reportMeasure(
+  auto entry = PerformanceEntryReporter::getInstance()->reportMeasure(
       eventName, startTime, endTime, duration, startMark, endMark);
 
 #ifdef WITH_PERFETTO
@@ -171,6 +172,8 @@ void NativePerformance::measure(
     }
   }
 #endif
+  
+  return {entry.startTime, entry.duration};
 }
 
 void NativePerformance::clearMarks(
