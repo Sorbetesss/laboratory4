@@ -48,6 +48,41 @@ jsi::Symbol symbolFor(jsi::Runtime& runtime, const std::string& name) {
   auto symbolFor = Symbol.getPropertyAsFunction(runtime, "for");
   return symbolFor.callWithThis(runtime, Symbol, name).asSymbol(runtime);
 }
+
+jsi::Value getJsBuild(jsi::Runtime& runtime) {
+  auto __getBundleMetadataValue =
+      runtime.global().getProperty(runtime, "__getBundleMetadata");
+
+  if (!__getBundleMetadataValue.isObject() ||
+      !__getBundleMetadataValue.asObject(runtime).isFunction(runtime)) {
+    return jsi::Value::null();
+  }
+
+  auto bundleMetadataValue =
+      __getBundleMetadataValue.asObject(runtime).asFunction(runtime).call(
+          runtime);
+  if (!bundleMetadataValue.isObject()) {
+    return jsi::Value::null();
+  }
+
+  auto bundleMetadata = bundleMetadataValue.asObject(runtime);
+  auto buildNumber = bundleMetadata.getProperty(runtime, "otaBuildNumber");
+  if (!buildNumber.isString()) {
+    return jsi::Value::null();
+  }
+
+  auto Number = runtime.global().getPropertyAsFunction(runtime, "Number");
+  auto otaBuildNumber = Number.getPropertyAsFunction(runtime, "parseInt")
+                            .callWithThis(runtime, Number, buildNumber);
+  auto isFinite = Number.getPropertyAsFunction(runtime, "isFinite")
+                      .callWithThis(runtime, Number, otaBuildNumber);
+
+  if (isFinite.getBool() && otaBuildNumber.getNumber() > 0) {
+    return otaBuildNumber;
+  }
+
+  return jsi::Value::null();
+}
 } // namespace
 
 namespace facebook::react {
@@ -122,6 +157,7 @@ void JsErrorHandler::emitError(
 
   extraData.setProperty(runtime, "jsEngine", jsEngineValue);
   extraData.setProperty(runtime, "rawStack", error.getStack());
+  extraData.setProperty(runtime, "jsBuild", getJsBuild(runtime));
 
   auto cause = errorObj.getProperty(runtime, "cause");
   if (!isNull(runtime, cause) && cause.isObject()) {
