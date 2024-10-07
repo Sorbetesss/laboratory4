@@ -412,8 +412,15 @@ void ReactInstance::initializeRuntime(
               }
 
               if (isFatal) {
+                auto Error =
+                    runtime.global().getPropertyAsFunction(runtime, "Error");
+                auto isError = args[0].isObject() && !args[0].isNull() &&
+                    args[0].asObject(runtime).instanceOf(runtime, Error);
+                auto error = isError
+                    ? args[0].getObject(runtime)
+                    : Error.callAsConstructor(runtime, args[0]);
                 auto jsError =
-                    jsi::JSError(runtime, jsi::Value(runtime, args[0]));
+                    jsi::JSError(runtime, jsi::Value(runtime, error));
                 jsErrorHandler->handleFatalError(runtime, jsError);
                 return jsi::Value(true);
               }
