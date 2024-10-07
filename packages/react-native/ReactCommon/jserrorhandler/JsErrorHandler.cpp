@@ -32,6 +32,16 @@ bool isEmptyString(jsi::Runtime& runtime, const jsi::Value& value) {
 std::string toCppString(jsi::Runtime& runtime, const jsi::Value& value) {
   return value.toString(runtime).utf8(runtime);
 }
+
+jsi::Value toJSIValue(
+    jsi::Runtime& runtime,
+    const std::optional<std::string>& str) {
+  return str ? jsi::String::createFromUtf8(runtime, *str) : jsi::Value::null();
+}
+
+jsi::Value toJSIValue(jsi::Runtime& runtime, const std::optional<int>& num) {
+  return num ? jsi::Value(*num) : jsi::Value::null();
+}
 } // namespace
 
 namespace facebook::react {
@@ -49,12 +59,12 @@ void JsErrorHandler::handleError(
     jsi::JSError& error,
     bool isFatal) {
   // TODO: Current error parsing works and is stable. Can investigate using
-  // REGEX_HERMES to get additional Hermes data, though it requires JS setup.
-  if (isFatal) {
-    _hasHandledFatalError = true;
-  }
-
+  // REGEX_HERMES to get additional Hermes data, though it requires JS setup
   if (_isRuntimeReady) {
+    if (isFatal) {
+      _hasHandledFatalError = true;
+    }
+
     try {
       handleJSError(runtime, error, isFatal);
       return;
@@ -67,6 +77,13 @@ void JsErrorHandler::handleError(
     }
   }
 
+  emitError(runtime, error, isFatal);
+}
+
+void JsErrorHandler::emitError(
+    jsi::Runtime& runtime,
+    jsi::JSError& error,
+    bool isFatal) {
   auto message = error.getMessage();
   auto errorObj = error.value().getObject(runtime);
   auto componentStackValue = errorObj.getProperty(runtime, "componentStack");
@@ -118,10 +135,72 @@ void JsErrorHandler::handleError(
       ? std::nullopt
       : std::optional(componentStackValue.asString(runtime).utf8(runtime));
 
+  auto data = jsi::Object(runtime);
+  data.setProperty(runtime, "message", message);
+  data.setProperty(
+      runtime, "originalMessage", toJSIValue(runtime, originalMessage));
+  data.setProperty(runtime, "name", toJSIValue(runtime, name));
+  data.setProperty(
+      runtime, "componentStack", toJSIValue(runtime, componentStack));
+
   auto isHermes = runtime.global().hasProperty(runtime, "HermesInternal");
   auto stackFrames = StackTraceParser::parse(isHermes, error.getStack());
 
+  auto stack = jsi::Array(runtime, stackFrames.size());
+  for (size_t i = 0; i < stackFrames.size(); i++) {
+    auto& frame = stackFrames[i];
+    auto stackFrame = jsi::Object(runtime);
+    auto file = toJSIValue(runtime, frame.file);
+    auto lineNumber = toJSIValue(runtime, frame.lineNumber);
+    auto column = toJSIValue(runtime, frame.column);
+
+    stackFrame.setProperty(runtime, "file", file);
+    stackFrame.setProperty(runtime, "methodName", frame.methodName);
+    stackFrame.setProperty(runtime, "lineNumber", lineNumber);
+    stackFrame.setProperty(runtime, "column", column);
+    stack.setValueAtIndex(runtime, i, stackFrame);
+  }
+
+  data.setProperty(runtime, "stack", stack);
+
   auto id = nextExceptionId();
+  data.setProperty(runtime, "id", id);
+  data.setProperty(runtime, "isFatal", isFatal);
+  data.setProperty(runtime, "extraData", extraData);
+
+  auto isComponentErrorValue =
+      errorObj.getProperty(runtime, "isComponentError");
+  auto isComponentError =
+      isComponentErrorValue.isBool() && isComponentErrorValue.getBool();
+  data.setProperty(runtime, "isComponentError", isComponentError);
+
+  bool shouldPreventDefault = false;
+  auto preventDefault = jsi::Function::createFromHostFunction(
+      runtime,
+      jsi::PropNameID::forAscii(runtime, "preventDefault"),
+      0,
+      [&shouldPreventDefault](
+          jsi::Runtime& rt,
+          const jsi::Value& thisVal,
+          const jsi::Value* args,
+          size_t count) {
+        shouldPreventDefault = true;
+        return jsi::Value::undefined();
+      });
+
+  data.setProperty(runtime, "preventDefault", preventDefault);
+
+  for (auto& errorListener : _errorListeners) {
+    errorListener(runtime, jsi::Value(runtime, data));
+  }
+
+  if (shouldPreventDefault) {
+    return;
+  }
+
+  if (isFatal) {
+    _hasHandledFatalError = true;
+  }
 
   ParsedError parsedError = {
       .message = message,
@@ -135,6 +214,11 @@ void JsErrorHandler::handleError(
   };
 
   _onJsError(runtime, parsedError);
+}
+
+void JsErrorHandler::registerErrorListener(
+    const std::function<void(jsi::Runtime&, jsi::Value)>& errorListener) {
+  _errorListeners.push_back(errorListener);
 }
 
 bool JsErrorHandler::hasHandledFatalError() {
