@@ -40,8 +40,12 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
 - (void)instance:(RCTInstance *)instance
     didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
                    message:(NSString *)message
+           originalMessage:(NSString *)originalMessage
+                      name:(NSString *)name
+            componentStack:(NSString *)componentStack
                exceptionId:(NSUInteger)exceptionId
-                   isFatal:(BOOL)isFatal;
+                   isFatal:(BOOL)isFatal
+                 extraData:(NSDictionary<NSString *, id> *)extraData;
 
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime;
 

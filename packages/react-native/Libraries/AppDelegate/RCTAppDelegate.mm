@@ -181,8 +181,12 @@
 - (void)host:(RCTHost *)host
     didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
                    message:(NSString *)message
-               exceptionId:(NSUInteger)exceptionId
+           originalMessage:(NSString *)originalMessage
+                      name:(NSString *)name
+            componentStack:(NSString *)componentStack
+                        id:(NSUInteger)exceptionId
                    isFatal:(BOOL)isFatal
+                 extraData:(NSDictionary<NSString *, id> *)extraData
 {
 }
 

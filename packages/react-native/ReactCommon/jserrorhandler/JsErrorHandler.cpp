@@ -16,8 +16,11 @@
 namespace facebook::react {
 
 // TODO(T198763073): Migrate away from std::regex in this function
-static JsErrorHandler::ParsedError
-parseErrorStack(const jsi::JSError& error, bool isFatal, bool isHermes) {
+static JsErrorHandler::ParsedError parseErrorStack(
+    jsi::Runtime& runtime,
+    const jsi::JSError& error,
+    bool isFatal,
+    bool isHermes) {
   /**
    * This parses the different stack traces and puts them into one format
    * This borrows heavily from TraceKit (https://github.com/occ/TraceKit)
@@ -58,10 +61,10 @@ parseErrorStack(const jsi::JSError& error, bool isFatal, bool isHermes) {
         std::string str2 = std::string(searchResults[2]);
         if (str2.compare("native")) {
           frames.push_back({
-              .fileName = std::string(searchResults[4]),
+              .file = std::string(searchResults[4]),
               .methodName = std::string(searchResults[1]),
               .lineNumber = std::stoi(searchResults[5]),
-              .columnNumber = std::stoi(searchResults[6]),
+              .column = std::stoi(searchResults[6]),
           });
         }
       }
@@ -69,10 +72,10 @@ parseErrorStack(const jsi::JSError& error, bool isFatal, bool isHermes) {
       // @lint-ignore CLANGTIDY facebook-hte-StdRegexIsAwful
       if (std::regex_search(line, searchResults, REGEX_GECKO)) {
         frames.push_back({
-            .fileName = std::string(searchResults[3]),
+            .file = std::string(searchResults[3]),
             .methodName = std::string(searchResults[1]),
             .lineNumber = std::stoi(searchResults[4]),
-            .columnNumber = std::stoi(searchResults[5]),
+            .column = std::stoi(searchResults[5]),
         });
       } else if (
           // @lint-ignore CLANGTIDY facebook-hte-StdRegexIsAwful
@@ -80,10 +83,10 @@ parseErrorStack(const jsi::JSError& error, bool isFatal, bool isHermes) {
           // @lint-ignore CLANGTIDY facebook-hte-StdRegexIsAwful
           std::regex_search(line, searchResults, REGEX_NODE)) {
         frames.push_back({
-            .fileName = std::string(searchResults[2]),
+            .file = std::string(searchResults[2]),
             .methodName = std::string(searchResults[1]),
             .lineNumber = std::stoi(searchResults[3]),
-            .columnNumber = std::stoi(searchResults[4]),
+            .column = std::stoi(searchResults[4]),
         });
       } else {
         continue;
@@ -92,10 +95,14 @@ parseErrorStack(const jsi::JSError& error, bool isFatal, bool isHermes) {
   }
 
   return {
-      .frames = std::move(frames),
       .message = "EarlyJsError: " + error.getMessage(),
-      .exceptionId = 0,
+      .originalMessage = std::nullopt,
+      .name = std::nullopt,
+      .componentStack = std::nullopt,
+      .stack = std::move(frames),
+      .id = 0,
       .isFatal = isFatal,
+      .extraData = jsi::Object(runtime),
   };
 }
 
@@ -127,8 +134,8 @@ void JsErrorHandler::handleFatalError(
     }
   }
   // This is a hacky way to get Hermes stack trace.
-  ParsedError parsedError = parseErrorStack(error, true, false);
-  _onJsError(parsedError);
+  ParsedError parsedError = parseErrorStack(runtime, error, true, false);
+  _onJsError(runtime, parsedError);
 }
 
 bool JsErrorHandler::hasHandledFatalError() {

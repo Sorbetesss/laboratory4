@@ -30,8 +30,12 @@ typedef NSURL *_Nullable (^RCTHostBundleURLProvider)(void);
 - (void)host:(RCTHost *)host
     didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
                    message:(NSString *)message
+           originalMessage:(NSString *)originalMessage
+                      name:(NSString *)name
+            componentStack:(NSString *)componentStack
                exceptionId:(NSUInteger)exceptionId
-                   isFatal:(BOOL)isFatal;
+                   isFatal:(BOOL)isFatal
+                 extraData:(NSDictionary<NSString *, id> *)extraData;
 
 - (void)hostDidStart:(RCTHost *)host;
 
