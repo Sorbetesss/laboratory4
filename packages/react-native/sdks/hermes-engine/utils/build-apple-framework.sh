@@ -17,7 +17,7 @@ REACT_NATIVE_PATH=${REACT_NATIVE_PATH:-$CURR_SCRIPT_DIR/../../..}
 
 NUM_CORES=$(sysctl -n hw.ncpu)
 
-PLATFORMS=("macosx" "iphoneos" "iphonesimulator" "catalyst" "xros" "xrsimulator")
+PLATFORMS=("macosx" "iphoneos" "iphonesimulator" "catalyst" "xros" "xrsimulator" "appletvos" "appletvsimulator")
 
 if [[ -z "$JSI_PATH" ]]; then
   JSI_PATH="$REACT_NATIVE_PATH/ReactCommon/jsi"
@@ -50,6 +50,10 @@ function get_ios_deployment_target {
 
 function get_visionos_deployment_target {
   use_env_var "${XROS_DEPLOYMENT_TARGET}" "XROS_DEPLOYMENT_TARGET"
+}
+
+function get_tvos_deployment_target {
+  use_env_var_or_ruby_prop "${IOS_DEPLOYMENT_TARGET}" "deployment_target('tvos')"
 }
 
 function get_mac_deployment_target {
