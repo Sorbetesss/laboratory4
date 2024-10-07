@@ -42,6 +42,12 @@ jsi::Value toJSIValue(
 jsi::Value toJSIValue(jsi::Runtime& runtime, const std::optional<int>& num) {
   return num ? jsi::Value(*num) : jsi::Value::null();
 }
+
+jsi::Symbol symbolFor(jsi::Runtime& runtime, const std::string& name) {
+  auto Symbol = runtime.global().getPropertyAsObject(runtime, "Symbol");
+  auto symbolFor = Symbol.getPropertyAsFunction(runtime, "for");
+  return symbolFor.callWithThis(runtime, Symbol, name).asSymbol(runtime);
+}
 } // namespace
 
 namespace facebook::react {
@@ -106,8 +112,14 @@ void JsErrorHandler::emitError(
     message += ", js engine: " + toCppString(runtime, jsEngineValue);
   }
 
-  // TODO: What about spreading in decoratedExtraDataKey?
-  auto extraData = jsi::Object(runtime);
+  auto decoratedExtraDataKey = jsi::PropNameID::forSymbol(
+      runtime, symbolFor(runtime, "RN$ErrorExtraDataKey"));
+
+  auto initialExtraData = errorObj.getProperty(runtime, decoratedExtraDataKey);
+  auto extraData = initialExtraData.isObject()
+      ? initialExtraData.asObject(runtime)
+      : jsi::Object(runtime);
+
   extraData.setProperty(runtime, "jsEngine", jsEngineValue);
   extraData.setProperty(runtime, "rawStack", error.getStack());
 
