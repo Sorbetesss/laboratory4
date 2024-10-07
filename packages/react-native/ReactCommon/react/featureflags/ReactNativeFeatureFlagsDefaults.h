@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3ba99bf8dd5f7e146e3488dbc8bc59c8>>
+ * @generated SignedSource<<797150005bc7d5e76d4d004b54f8942b>>
  */
 
 /**
@@ -43,10 +43,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool destroyFabricSurfacesInReactInstanceManager() override {
-    return false;
-  }
-
   bool enableAlignItemsBaselineOnFabricIOS() override {
     return true;
   }
@@ -55,12 +51,8 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableAndroidMixBlendModeProp() override {
+  bool enableBridgelessArchitecture() override {
     return false;
-  }
-
-  bool enableBackgroundStyleApplicator() override {
-    return true;
   }
 
   bool enableCleanTextInputYogaNode() override {
@@ -80,6 +72,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableFabricLogs() override {
+    return false;
+  }
+
+  bool enableFabricRenderer() override {
     return false;
   }
 
@@ -180,7 +176,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool setAndroidLayoutDirection() override {
-    return false;
+    return true;
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
@@ -203,10 +199,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool useNewReactImageViewBackgroundDrawing() override {
-    return false;
-  }
-
   bool useOptimisedViewPreallocationOnAndroid() override {
     return false;
   }
@@ -216,18 +208,14 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useRuntimeShadowNodeReferenceUpdate() override {
-    return false;
-  }
-
-  bool useRuntimeShadowNodeReferenceUpdateOnLayout() override {
-    return false;
-  }
-
-  bool useStateAlignmentMechanism() override {
-    return false;
+    return true;
   }
 
   bool useTurboModuleInterop() override {
+    return false;
+  }
+
+  bool useTurboModules() override {
     return false;
   }
 };

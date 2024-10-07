@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
@@ -27,7 +28,6 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -196,8 +196,8 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       name = ViewProps.BACKGROUND_COLOR,
       defaultInt = Color.TRANSPARENT,
       customType = "Color")
-  public void setBackgroundColor(@NonNull T view, int backgroundColor) {
-    view.setBackgroundColor(backgroundColor);
+  public void setBackgroundColor(@NonNull T view, @ColorInt int backgroundColor) {
+    BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor);
   }
 
   @Override
@@ -213,6 +213,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setMixBlendMode(@NonNull T view, @Nullable String mixBlendMode) {
     if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
       view.setTag(R.id.mix_blend_mode, BlendModeHelper.parseMixBlendMode(mixBlendMode));
+      // We need to trigger drawChild for the parent ViewGroup which will set the
+      // mixBlendMode compositing on the child
+      if (view.getParent() instanceof View) {
+        ((View) view.getParent()).invalidate();
+      }
     }
   }
 
@@ -784,33 +789,25 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = ViewProps.OUTLINE_COLOR, customType = "Color")
   public void setOutlineColor(T view, @Nullable Integer color) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setOutlineColor(view, color);
-    }
+    BackgroundStyleApplicator.setOutlineColor(view, color);
   }
 
   @ReactProp(name = ViewProps.OUTLINE_OFFSET)
   public void setOutlineOffset(T view, float offset) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setOutlineOffset(view, offset);
-    }
+    BackgroundStyleApplicator.setOutlineOffset(view, offset);
   }
 
   @ReactProp(name = ViewProps.OUTLINE_STYLE)
   public void setOutlineStyle(T view, @Nullable String outlineStyle) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      @Nullable
-      OutlineStyle parsedOutlineStyle =
-          outlineStyle == null ? null : OutlineStyle.fromString(outlineStyle);
-      BackgroundStyleApplicator.setOutlineStyle(view, parsedOutlineStyle);
-    }
+    @Nullable
+    OutlineStyle parsedOutlineStyle =
+        outlineStyle == null ? null : OutlineStyle.fromString(outlineStyle);
+    BackgroundStyleApplicator.setOutlineStyle(view, parsedOutlineStyle);
   }
 
   @ReactProp(name = ViewProps.OUTLINE_WIDTH)
   public void setOutlineWidth(T view, float width) {
-    if (ReactNativeFeatureFlags.enableBackgroundStyleApplicator()) {
-      BackgroundStyleApplicator.setOutlineWidth(view, width);
-    }
+    BackgroundStyleApplicator.setOutlineWidth(view, width);
   }
 
   private void logUnsupportedPropertyWarning(String propName) {

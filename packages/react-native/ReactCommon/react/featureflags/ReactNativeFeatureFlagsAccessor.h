@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3273d68bcf8118b939e11dde654c3e34>>
+ * @generated SignedSource<<ca86e53cf26c0103d12e8800fd427845>>
  */
 
 /**
@@ -35,16 +35,15 @@ class ReactNativeFeatureFlagsAccessor {
   bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
   bool batchRenderingUpdatesInEventLoop();
   bool completeReactInstanceCreationOnBgThreadOnAndroid();
-  bool destroyFabricSurfacesInReactInstanceManager();
   bool enableAlignItemsBaselineOnFabricIOS();
   bool enableAndroidLineHeightCentering();
-  bool enableAndroidMixBlendModeProp();
-  bool enableBackgroundStyleApplicator();
+  bool enableBridgelessArchitecture();
   bool enableCleanTextInputYogaNode();
   bool enableDeletionOfUnmountedViews();
   bool enableEagerRootViewAttachment();
   bool enableEventEmitterRetentionDuringGesturesOnAndroid();
   bool enableFabricLogs();
+  bool enableFabricRenderer();
   bool enableFabricRendererExclusively();
   bool enableGranularShadowTreeStateReconciliation();
   bool enableIOSViewClipToPaddingBox();
@@ -75,13 +74,11 @@ class ReactNativeFeatureFlagsAccessor {
   bool useImmediateExecutorInAndroidBridgeless();
   bool useModernRuntimeScheduler();
   bool useNativeViewConfigsInBridgelessMode();
-  bool useNewReactImageViewBackgroundDrawing();
   bool useOptimisedViewPreallocationOnAndroid();
   bool useOptimizedEventBatchingOnAndroid();
   bool useRuntimeShadowNodeReferenceUpdate();
-  bool useRuntimeShadowNodeReferenceUpdateOnLayout();
-  bool useStateAlignmentMechanism();
   bool useTurboModuleInterop();
+  bool useTurboModules();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
 
@@ -92,22 +89,21 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 51> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 48> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
   std::atomic<std::optional<bool>> batchRenderingUpdatesInEventLoop_;
   std::atomic<std::optional<bool>> completeReactInstanceCreationOnBgThreadOnAndroid_;
-  std::atomic<std::optional<bool>> destroyFabricSurfacesInReactInstanceManager_;
   std::atomic<std::optional<bool>> enableAlignItemsBaselineOnFabricIOS_;
   std::atomic<std::optional<bool>> enableAndroidLineHeightCentering_;
-  std::atomic<std::optional<bool>> enableAndroidMixBlendModeProp_;
-  std::atomic<std::optional<bool>> enableBackgroundStyleApplicator_;
+  std::atomic<std::optional<bool>> enableBridgelessArchitecture_;
   std::atomic<std::optional<bool>> enableCleanTextInputYogaNode_;
   std::atomic<std::optional<bool>> enableDeletionOfUnmountedViews_;
   std::atomic<std::optional<bool>> enableEagerRootViewAttachment_;
   std::atomic<std::optional<bool>> enableEventEmitterRetentionDuringGesturesOnAndroid_;
   std::atomic<std::optional<bool>> enableFabricLogs_;
+  std::atomic<std::optional<bool>> enableFabricRenderer_;
   std::atomic<std::optional<bool>> enableFabricRendererExclusively_;
   std::atomic<std::optional<bool>> enableGranularShadowTreeStateReconciliation_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
@@ -138,13 +134,11 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useImmediateExecutorInAndroidBridgeless_;
   std::atomic<std::optional<bool>> useModernRuntimeScheduler_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
-  std::atomic<std::optional<bool>> useNewReactImageViewBackgroundDrawing_;
   std::atomic<std::optional<bool>> useOptimisedViewPreallocationOnAndroid_;
   std::atomic<std::optional<bool>> useOptimizedEventBatchingOnAndroid_;
   std::atomic<std::optional<bool>> useRuntimeShadowNodeReferenceUpdate_;
-  std::atomic<std::optional<bool>> useRuntimeShadowNodeReferenceUpdateOnLayout_;
-  std::atomic<std::optional<bool>> useStateAlignmentMechanism_;
   std::atomic<std::optional<bool>> useTurboModuleInterop_;
+  std::atomic<std::optional<bool>> useTurboModules_;
 };
 
 } // namespace facebook::react

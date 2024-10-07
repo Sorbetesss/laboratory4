@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<54c94f9bfa07e41d978899dbce03469f>>
+ * @generated SignedSource<<a0c02cb18082c572be8d584737cea8fa>>
  */
 
 /**
@@ -42,19 +42,13 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool completeReactInstanceCreationOnBgThreadOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool destroyFabricSurfacesInReactInstanceManager(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
   static bool enableAlignItemsBaselineOnFabricIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableAndroidLineHeightCentering(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool enableAndroidMixBlendModeProp(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool enableBackgroundStyleApplicator(
+  static bool enableBridgelessArchitecture(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableCleanTextInputYogaNode(
@@ -70,6 +64,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableFabricLogs(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool enableFabricRenderer(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableFabricRendererExclusively(
@@ -162,9 +159,6 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool useNativeViewConfigsInBridgelessMode(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool useNewReactImageViewBackgroundDrawing(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
   static bool useOptimisedViewPreallocationOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
@@ -174,13 +168,10 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool useRuntimeShadowNodeReferenceUpdate(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool useRuntimeShadowNodeReferenceUpdateOnLayout(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool useStateAlignmentMechanism(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
   static bool useTurboModuleInterop(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool useTurboModules(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static void override(

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<43b92dd984e985e09e3efad9c8fedf44>>
+ * @generated SignedSource<<0ec332b341bc55ba1a0ab75f2ede82f6>>
  */
 
 /**
@@ -63,12 +63,6 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
-  bool destroyFabricSurfacesInReactInstanceManager() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("destroyFabricSurfacesInReactInstanceManager");
-    return method(javaProvider_);
-  }
-
   bool enableAlignItemsBaselineOnFabricIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAlignItemsBaselineOnFabricIOS");
@@ -81,15 +75,9 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
-  bool enableAndroidMixBlendModeProp() override {
+  bool enableBridgelessArchitecture() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAndroidMixBlendModeProp");
-    return method(javaProvider_);
-  }
-
-  bool enableBackgroundStyleApplicator() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableBackgroundStyleApplicator");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableBridgelessArchitecture");
     return method(javaProvider_);
   }
 
@@ -120,6 +108,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableFabricLogs() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFabricLogs");
+    return method(javaProvider_);
+  }
+
+  bool enableFabricRenderer() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFabricRenderer");
     return method(javaProvider_);
   }
 
@@ -303,12 +297,6 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
-  bool useNewReactImageViewBackgroundDrawing() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useNewReactImageViewBackgroundDrawing");
-    return method(javaProvider_);
-  }
-
   bool useOptimisedViewPreallocationOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useOptimisedViewPreallocationOnAndroid");
@@ -327,21 +315,15 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
-  bool useRuntimeShadowNodeReferenceUpdateOnLayout() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useRuntimeShadowNodeReferenceUpdateOnLayout");
-    return method(javaProvider_);
-  }
-
-  bool useStateAlignmentMechanism() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useStateAlignmentMechanism");
-    return method(javaProvider_);
-  }
-
   bool useTurboModuleInterop() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useTurboModuleInterop");
+    return method(javaProvider_);
+  }
+
+  bool useTurboModules() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useTurboModules");
     return method(javaProvider_);
   }
 
@@ -369,11 +351,6 @@ bool JReactNativeFeatureFlagsCxxInterop::completeReactInstanceCreationOnBgThread
   return ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::destroyFabricSurfacesInReactInstanceManager(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableAlignItemsBaselineOnFabricIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS();
@@ -384,14 +361,9 @@ bool JReactNativeFeatureFlagsCxxInterop::enableAndroidLineHeightCentering(
   return ReactNativeFeatureFlags::enableAndroidLineHeightCentering();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableAndroidMixBlendModeProp(
+bool JReactNativeFeatureFlagsCxxInterop::enableBridgelessArchitecture(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableAndroidMixBlendModeProp();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::enableBackgroundStyleApplicator(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableBackgroundStyleApplicator();
+  return ReactNativeFeatureFlags::enableBridgelessArchitecture();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableCleanTextInputYogaNode(
@@ -417,6 +389,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableEventEmitterRetentionDuringGestur
 bool JReactNativeFeatureFlagsCxxInterop::enableFabricLogs(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableFabricLogs();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableFabricRenderer(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableFabricRenderer();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableFabricRendererExclusively(
@@ -569,11 +546,6 @@ bool JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode(
   return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::useNewReactImageViewBackgroundDrawing(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useNewReactImageViewBackgroundDrawing();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::useOptimisedViewPreallocationOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid();
@@ -589,19 +561,14 @@ bool JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdate(
   return ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdateOnLayout(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdateOnLayout();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::useStateAlignmentMechanism(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useStateAlignmentMechanism();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useTurboModuleInterop();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::useTurboModules(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useTurboModules();
 }
 
 void JReactNativeFeatureFlagsCxxInterop::override(
@@ -634,20 +601,14 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "completeReactInstanceCreationOnBgThreadOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::completeReactInstanceCreationOnBgThreadOnAndroid),
       makeNativeMethod(
-        "destroyFabricSurfacesInReactInstanceManager",
-        JReactNativeFeatureFlagsCxxInterop::destroyFabricSurfacesInReactInstanceManager),
-      makeNativeMethod(
         "enableAlignItemsBaselineOnFabricIOS",
         JReactNativeFeatureFlagsCxxInterop::enableAlignItemsBaselineOnFabricIOS),
       makeNativeMethod(
         "enableAndroidLineHeightCentering",
         JReactNativeFeatureFlagsCxxInterop::enableAndroidLineHeightCentering),
       makeNativeMethod(
-        "enableAndroidMixBlendModeProp",
-        JReactNativeFeatureFlagsCxxInterop::enableAndroidMixBlendModeProp),
-      makeNativeMethod(
-        "enableBackgroundStyleApplicator",
-        JReactNativeFeatureFlagsCxxInterop::enableBackgroundStyleApplicator),
+        "enableBridgelessArchitecture",
+        JReactNativeFeatureFlagsCxxInterop::enableBridgelessArchitecture),
       makeNativeMethod(
         "enableCleanTextInputYogaNode",
         JReactNativeFeatureFlagsCxxInterop::enableCleanTextInputYogaNode),
@@ -663,6 +624,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableFabricLogs",
         JReactNativeFeatureFlagsCxxInterop::enableFabricLogs),
+      makeNativeMethod(
+        "enableFabricRenderer",
+        JReactNativeFeatureFlagsCxxInterop::enableFabricRenderer),
       makeNativeMethod(
         "enableFabricRendererExclusively",
         JReactNativeFeatureFlagsCxxInterop::enableFabricRendererExclusively),
@@ -754,9 +718,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "useNativeViewConfigsInBridgelessMode",
         JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode),
       makeNativeMethod(
-        "useNewReactImageViewBackgroundDrawing",
-        JReactNativeFeatureFlagsCxxInterop::useNewReactImageViewBackgroundDrawing),
-      makeNativeMethod(
         "useOptimisedViewPreallocationOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::useOptimisedViewPreallocationOnAndroid),
       makeNativeMethod(
@@ -766,14 +727,11 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "useRuntimeShadowNodeReferenceUpdate",
         JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdate),
       makeNativeMethod(
-        "useRuntimeShadowNodeReferenceUpdateOnLayout",
-        JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdateOnLayout),
-      makeNativeMethod(
-        "useStateAlignmentMechanism",
-        JReactNativeFeatureFlagsCxxInterop::useStateAlignmentMechanism),
-      makeNativeMethod(
         "useTurboModuleInterop",
         JReactNativeFeatureFlagsCxxInterop::useTurboModuleInterop),
+      makeNativeMethod(
+        "useTurboModules",
+        JReactNativeFeatureFlagsCxxInterop::useTurboModules),
   });
 }
 

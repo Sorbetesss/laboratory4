@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<596ec10892f79595c352d27574a0c5a3>>
+ * @generated SignedSource<<710fbb44aa7ffbc03d54b29b63aa0a73>>
  */
 
 /**
@@ -43,15 +43,11 @@ class NativeReactNativeFeatureFlags
 
   bool completeReactInstanceCreationOnBgThreadOnAndroid(jsi::Runtime& runtime);
 
-  bool destroyFabricSurfacesInReactInstanceManager(jsi::Runtime& runtime);
-
   bool enableAlignItemsBaselineOnFabricIOS(jsi::Runtime& runtime);
 
   bool enableAndroidLineHeightCentering(jsi::Runtime& runtime);
 
-  bool enableAndroidMixBlendModeProp(jsi::Runtime& runtime);
-
-  bool enableBackgroundStyleApplicator(jsi::Runtime& runtime);
+  bool enableBridgelessArchitecture(jsi::Runtime& runtime);
 
   bool enableCleanTextInputYogaNode(jsi::Runtime& runtime);
 
@@ -62,6 +58,8 @@ class NativeReactNativeFeatureFlags
   bool enableEventEmitterRetentionDuringGesturesOnAndroid(jsi::Runtime& runtime);
 
   bool enableFabricLogs(jsi::Runtime& runtime);
+
+  bool enableFabricRenderer(jsi::Runtime& runtime);
 
   bool enableFabricRendererExclusively(jsi::Runtime& runtime);
 
@@ -123,19 +121,15 @@ class NativeReactNativeFeatureFlags
 
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
 
-  bool useNewReactImageViewBackgroundDrawing(jsi::Runtime& runtime);
-
   bool useOptimisedViewPreallocationOnAndroid(jsi::Runtime& runtime);
 
   bool useOptimizedEventBatchingOnAndroid(jsi::Runtime& runtime);
 
   bool useRuntimeShadowNodeReferenceUpdate(jsi::Runtime& runtime);
 
-  bool useRuntimeShadowNodeReferenceUpdateOnLayout(jsi::Runtime& runtime);
-
-  bool useStateAlignmentMechanism(jsi::Runtime& runtime);
-
   bool useTurboModuleInterop(jsi::Runtime& runtime);
+
+  bool useTurboModules(jsi::Runtime& runtime);
 };
 
 } // namespace facebook::react

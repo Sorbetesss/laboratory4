@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<73409b567e77f17838ae9681a8e20be6>>
+ * @generated SignedSource<<7d80322a6a37083c5e52e6914de49ce2>>
  */
 
 /**
@@ -53,12 +53,6 @@ public object ReactNativeFeatureFlags {
   public fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = accessor.completeReactInstanceCreationOnBgThreadOnAndroid()
 
   /**
-   * When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().
-   */
-  @JvmStatic
-  public fun destroyFabricSurfacesInReactInstanceManager(): Boolean = accessor.destroyFabricSurfacesInReactInstanceManager()
-
-  /**
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
    */
   @JvmStatic
@@ -71,16 +65,10 @@ public object ReactNativeFeatureFlags {
   public fun enableAndroidLineHeightCentering(): Boolean = accessor.enableAndroidLineHeightCentering()
 
   /**
-   * Enables mix-blend-mode prop on Android.
+   * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
    */
   @JvmStatic
-  public fun enableAndroidMixBlendModeProp(): Boolean = accessor.enableAndroidMixBlendModeProp()
-
-  /**
-   * Use BackgroundStyleApplicator in place of other background/border drawing code
-   */
-  @JvmStatic
-  public fun enableBackgroundStyleApplicator(): Boolean = accessor.enableBackgroundStyleApplicator()
+  public fun enableBridgelessArchitecture(): Boolean = accessor.enableBridgelessArchitecture()
 
   /**
    * Clean yoga node when <TextInput /> does not change.
@@ -111,6 +99,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableFabricLogs(): Boolean = accessor.enableFabricLogs()
+
+  /**
+   * Enables the use of the Fabric renderer in the whole app.
+   */
+  @JvmStatic
+  public fun enableFabricRenderer(): Boolean = accessor.enableFabricRenderer()
 
   /**
    * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
@@ -293,12 +287,6 @@ public object ReactNativeFeatureFlags {
   public fun useNativeViewConfigsInBridgelessMode(): Boolean = accessor.useNativeViewConfigsInBridgelessMode()
 
   /**
-   * Use shared background drawing code for ReactImageView instead of using Fresco to manipulate the bitmap
-   */
-  @JvmStatic
-  public fun useNewReactImageViewBackgroundDrawing(): Boolean = accessor.useNewReactImageViewBackgroundDrawing()
-
-  /**
    * Moves more of the work in view preallocation to the main thread to free up JS thread.
    */
   @JvmStatic
@@ -317,22 +305,16 @@ public object ReactNativeFeatureFlags {
   public fun useRuntimeShadowNodeReferenceUpdate(): Boolean = accessor.useRuntimeShadowNodeReferenceUpdate()
 
   /**
-   * When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.
-   */
-  @JvmStatic
-  public fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean = accessor.useRuntimeShadowNodeReferenceUpdateOnLayout()
-
-  /**
-   * When enabled, it uses optimised state reconciliation algorithm.
-   */
-  @JvmStatic
-  public fun useStateAlignmentMechanism(): Boolean = accessor.useStateAlignmentMechanism()
-
-  /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
    */
   @JvmStatic
   public fun useTurboModuleInterop(): Boolean = accessor.useTurboModuleInterop()
+
+  /**
+   * When enabled, NativeModules will be executed by using the TurboModule system
+   */
+  @JvmStatic
+  public fun useTurboModules(): Boolean = accessor.useTurboModules()
 
   /**
    * Overrides the feature flags with the ones provided by the given provider

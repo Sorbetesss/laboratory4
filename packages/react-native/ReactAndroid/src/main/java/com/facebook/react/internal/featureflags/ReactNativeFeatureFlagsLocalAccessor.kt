@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e1a44f8e54709e70934f1d418d4ed80f>>
+ * @generated SignedSource<<a307a1f9b5064547ce32f9519bbf27c4>>
  */
 
 /**
@@ -28,16 +28,15 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var batchRenderingUpdatesInEventLoopCache: Boolean? = null
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
-  private var destroyFabricSurfacesInReactInstanceManagerCache: Boolean? = null
   private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
   private var enableAndroidLineHeightCenteringCache: Boolean? = null
-  private var enableAndroidMixBlendModePropCache: Boolean? = null
-  private var enableBackgroundStyleApplicatorCache: Boolean? = null
+  private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCleanTextInputYogaNodeCache: Boolean? = null
   private var enableDeletionOfUnmountedViewsCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableEventEmitterRetentionDuringGesturesOnAndroidCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
+  private var enableFabricRendererCache: Boolean? = null
   private var enableFabricRendererExclusivelyCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
@@ -68,13 +67,11 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var useImmediateExecutorInAndroidBridgelessCache: Boolean? = null
   private var useModernRuntimeSchedulerCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
-  private var useNewReactImageViewBackgroundDrawingCache: Boolean? = null
   private var useOptimisedViewPreallocationOnAndroidCache: Boolean? = null
   private var useOptimizedEventBatchingOnAndroidCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateCache: Boolean? = null
-  private var useRuntimeShadowNodeReferenceUpdateOnLayoutCache: Boolean? = null
-  private var useStateAlignmentMechanismCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
+  private var useTurboModulesCache: Boolean? = null
 
   override fun commonTestFlag(): Boolean {
     var cached = commonTestFlagCache
@@ -116,16 +113,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-  override fun destroyFabricSurfacesInReactInstanceManager(): Boolean {
-    var cached = destroyFabricSurfacesInReactInstanceManagerCache
-    if (cached == null) {
-      cached = currentProvider.destroyFabricSurfacesInReactInstanceManager()
-      accessedFeatureFlags.add("destroyFabricSurfacesInReactInstanceManager")
-      destroyFabricSurfacesInReactInstanceManagerCache = cached
-    }
-    return cached
-  }
-
   override fun enableAlignItemsBaselineOnFabricIOS(): Boolean {
     var cached = enableAlignItemsBaselineOnFabricIOSCache
     if (cached == null) {
@@ -146,22 +133,12 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-  override fun enableAndroidMixBlendModeProp(): Boolean {
-    var cached = enableAndroidMixBlendModePropCache
+  override fun enableBridgelessArchitecture(): Boolean {
+    var cached = enableBridgelessArchitectureCache
     if (cached == null) {
-      cached = currentProvider.enableAndroidMixBlendModeProp()
-      accessedFeatureFlags.add("enableAndroidMixBlendModeProp")
-      enableAndroidMixBlendModePropCache = cached
-    }
-    return cached
-  }
-
-  override fun enableBackgroundStyleApplicator(): Boolean {
-    var cached = enableBackgroundStyleApplicatorCache
-    if (cached == null) {
-      cached = currentProvider.enableBackgroundStyleApplicator()
-      accessedFeatureFlags.add("enableBackgroundStyleApplicator")
-      enableBackgroundStyleApplicatorCache = cached
+      cached = currentProvider.enableBridgelessArchitecture()
+      accessedFeatureFlags.add("enableBridgelessArchitecture")
+      enableBridgelessArchitectureCache = cached
     }
     return cached
   }
@@ -212,6 +189,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableFabricLogs()
       accessedFeatureFlags.add("enableFabricLogs")
       enableFabricLogsCache = cached
+    }
+    return cached
+  }
+
+  override fun enableFabricRenderer(): Boolean {
+    var cached = enableFabricRendererCache
+    if (cached == null) {
+      cached = currentProvider.enableFabricRenderer()
+      accessedFeatureFlags.add("enableFabricRenderer")
+      enableFabricRendererCache = cached
     }
     return cached
   }
@@ -516,16 +503,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-  override fun useNewReactImageViewBackgroundDrawing(): Boolean {
-    var cached = useNewReactImageViewBackgroundDrawingCache
-    if (cached == null) {
-      cached = currentProvider.useNewReactImageViewBackgroundDrawing()
-      accessedFeatureFlags.add("useNewReactImageViewBackgroundDrawing")
-      useNewReactImageViewBackgroundDrawingCache = cached
-    }
-    return cached
-  }
-
   override fun useOptimisedViewPreallocationOnAndroid(): Boolean {
     var cached = useOptimisedViewPreallocationOnAndroidCache
     if (cached == null) {
@@ -556,32 +533,22 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-  override fun useRuntimeShadowNodeReferenceUpdateOnLayout(): Boolean {
-    var cached = useRuntimeShadowNodeReferenceUpdateOnLayoutCache
-    if (cached == null) {
-      cached = currentProvider.useRuntimeShadowNodeReferenceUpdateOnLayout()
-      accessedFeatureFlags.add("useRuntimeShadowNodeReferenceUpdateOnLayout")
-      useRuntimeShadowNodeReferenceUpdateOnLayoutCache = cached
-    }
-    return cached
-  }
-
-  override fun useStateAlignmentMechanism(): Boolean {
-    var cached = useStateAlignmentMechanismCache
-    if (cached == null) {
-      cached = currentProvider.useStateAlignmentMechanism()
-      accessedFeatureFlags.add("useStateAlignmentMechanism")
-      useStateAlignmentMechanismCache = cached
-    }
-    return cached
-  }
-
   override fun useTurboModuleInterop(): Boolean {
     var cached = useTurboModuleInteropCache
     if (cached == null) {
       cached = currentProvider.useTurboModuleInterop()
       accessedFeatureFlags.add("useTurboModuleInterop")
       useTurboModuleInteropCache = cached
+    }
+    return cached
+  }
+
+  override fun useTurboModules(): Boolean {
+    var cached = useTurboModulesCache
+    if (cached == null) {
+      cached = currentProvider.useTurboModules()
+      accessedFeatureFlags.add("useTurboModules")
+      useTurboModulesCache = cached
     }
     return cached
   }
