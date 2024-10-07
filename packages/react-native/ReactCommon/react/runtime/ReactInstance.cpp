@@ -84,7 +84,7 @@ ReactInstance::ReactInstance(
             }
           }
         } catch (jsi::JSError& originalError) {
-          jsErrorHandler->handleFatalError(jsiRuntime, originalError);
+          jsErrorHandler->handleError(jsiRuntime, originalError, true);
         }
       });
     }
@@ -129,7 +129,7 @@ ReactInstance::ReactInstance(
       RuntimeSchedulerClock::now,
       [jsErrorHandler = jsErrorHandler_](
           jsi::Runtime& runtime, jsi::JSError& error) {
-        jsErrorHandler->handleFatalError(runtime, error);
+        jsErrorHandler->handleError(runtime, error, true);
       });
   runtimeScheduler_->setPerformanceEntryReporter(
       // FIXME: Move creation of PerformanceEntryReporter to here and guarantee
@@ -411,21 +411,16 @@ void ReactInstance::initializeRuntime(
                 return jsi::Value(false);
               }
 
-              if (isFatal) {
-                auto Error =
-                    runtime.global().getPropertyAsFunction(runtime, "Error");
-                auto isError = args[0].isObject() && !args[0].isNull() &&
-                    args[0].asObject(runtime).instanceOf(runtime, Error);
-                auto error = isError
-                    ? args[0].getObject(runtime)
-                    : Error.callAsConstructor(runtime, args[0]);
-                auto jsError =
-                    jsi::JSError(runtime, jsi::Value(runtime, error));
-                jsErrorHandler->handleFatalError(runtime, jsError);
-                return jsi::Value(true);
-              }
+              auto Error =
+                  runtime.global().getPropertyAsFunction(runtime, "Error");
+              auto isError = args[0].isObject() && !args[0].isNull() &&
+                  args[0].asObject(runtime).instanceOf(runtime, Error);
+              auto error = isError ? args[0].getObject(runtime)
+                                   : Error.callAsConstructor(runtime, args[0]);
+              auto jsError = jsi::JSError(runtime, jsi::Value(runtime, error));
+              jsErrorHandler->handleError(runtime, jsError, isFatal);
 
-              return jsi::Value(false);
+              return jsi::Value(true);
             }));
 
     defineReadOnlyGlobal(

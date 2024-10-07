@@ -38,7 +38,7 @@ class JsErrorHandler {
   explicit JsErrorHandler(OnJsError onJsError);
   ~JsErrorHandler();
 
-  void handleFatalError(jsi::Runtime& runtime, jsi::JSError& error);
+  void handleError(jsi::Runtime& runtime, jsi::JSError& error, bool isFatal);
   bool hasHandledFatalError();
   void setRuntimeReady();
   bool isRuntimeReady();
