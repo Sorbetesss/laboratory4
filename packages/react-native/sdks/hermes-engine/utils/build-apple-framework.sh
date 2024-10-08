@@ -52,10 +52,6 @@ function get_visionos_deployment_target {
   use_env_var "${XROS_DEPLOYMENT_TARGET}" "XROS_DEPLOYMENT_TARGET"
 }
 
-function get_tvos_deployment_target {
-  use_env_var_or_ruby_prop "${IOS_DEPLOYMENT_TARGET}" "deployment_target('tvos')"
-}
-
 function get_mac_deployment_target {
   use_env_var "${MAC_DEPLOYMENT_TARGET}" "MAC_DEPLOYMENT_TARGET"
 }

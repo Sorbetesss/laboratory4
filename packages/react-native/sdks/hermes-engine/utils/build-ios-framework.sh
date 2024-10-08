@@ -31,9 +31,7 @@ function get_architecture {
 function get_deployment_target {
     if [[ $1 == "xros" || $1 == "xrsimulator" ]]; then
       echo "$(get_visionos_deployment_target)"
-    elif [[ $1 == "appletvos" || $1 == "appletvsimulator" ]]; then
-      echo "$(get_tvos_deployment_target)"
-    else
+    else # tvOS and iOS use the same deployment target
       echo "$(get_ios_deployment_target)"
     fi
 }
