@@ -30,8 +30,6 @@ end
 # Computes the hermes-engine.podspec's source type.
 # - To use a specific tarball, install the dependencies with:
 # `HERMES_ENGINE_TARBALL_PATH=<path_to_tarball> bundle exec pod install`
-# - To use a local Maven repository instead of public Maven:
-# `REACT_NATIVE_MAVEN_LOCAL_PATH=/tmp/maven-local bundle exec pod install`
 # - To force a build from source, install the dependencies with:
 # `RCT_BUILD_HERMES_FROM_SOURCE=true bundle exec pod install`
 # If none of the two are provided, Cocoapods will check whether there is a tarball for the current version
@@ -81,10 +79,6 @@ end
 
 def hermes_engine_tarball_envvar_defined()
     return ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
-end
-
-def react_native_maven_local_path_envvar_defined()
-    return ENV.has_key?('REACT_NATIVE_MAVEN_LOCAL_PATH')
 end
 
 def react_native_maven_namespace()
@@ -213,9 +207,6 @@ end
 
 def release_tarball_url(version, build_type)
     maven_repo_url = "https://repo1.maven.org/maven2"
-    if react_native_maven_local_path_envvar_defined()
-        maven_repo_url = "file://#{ENV[REACT_NATIVE_MAVEN_LOCAL_PATH]}"
-    end
     namespace = react_native_maven_namespace()
     # Sample url from Maven:
     # https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.71.0/react-native-artifacts-0.71.0-hermes-ios-debug.tar.gz
@@ -256,9 +247,6 @@ end
 # - version: the version of React Native
 # - build_type: debug or release
 def hermes_artifact_exists(tarball_url)
-    if tarball_url.start_with?("file:") == true
-      return true
-    end
     # -L is used to follow redirects, useful for the nightlies
     # I also needed to wrap the url in quotes to avoid escaping & and ?.
     return (`curl -o /dev/null --silent -Iw '%{http_code}' -L "#{tarball_url}"` == "200")
