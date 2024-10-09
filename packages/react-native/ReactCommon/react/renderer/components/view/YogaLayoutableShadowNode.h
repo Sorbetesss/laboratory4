@@ -25,6 +25,18 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
  public:
   using Shared = std::shared_ptr<const YogaLayoutableShadowNode>;
   using ListOfShared = std::vector<Shared>;
+    
+  /*
+   * Describes a shadow node which is a direct child in the Yoga tree,
+   * not necessarily in the shadow tree. In most cases directChild == yogaChild,
+   * the exception being when directChild has its display set to `contents`.
+   * In that case yogaChild points to a ShadowNode whose yogaNode is a direct
+   * child of this one's.
+   */
+  struct ChildPair {
+    Shared directChild;
+    Shared yogaChild;
+  };
 
 #pragma mark - Constructors
 
@@ -110,6 +122,22 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    * -> back to owned because its parent is allocated at the same address.
    */
   void updateYogaChildrenOwnersIfNeeded();
+
+  /*
+   * Executes passed function for every subtree root that has a proper yogaNode.
+   * In most cases the function will be executed only with the passed node as the
+   * argument, unless it has `display` style set to `contents`, in which case
+   * it will traverse that subtree recursively and execute the function for every
+   * found subtree root that does not have `display` set to `contents`.
+   */
+  void runForEveryConcreteSubtree(const YogaLayoutableShadowNode::Shared& node, std::invocable<const YogaLayoutableShadowNode::Shared&> auto fn) const;
+
+  /*
+   * Checks whether this node has its `display` property set to `contents`.
+   */
+  bool hasDisplayContentsStyle() const;
+    
+  void setContentsLayoutMetrics(LayoutContext layoutContext);
 
   /*
    * Return true if child's yogaNode's owner is this->yogaNode_. Otherwise
@@ -220,7 +248,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   /*
    * List of children which derive from YogaLayoutableShadowNode
    */
-  ListOfShared yogaLayoutableChildren_;
+  std::vector<ChildPair> yogaLayoutableChildren_;
 
   /*
    * Whether the full Yoga subtree of this Node has been configured.

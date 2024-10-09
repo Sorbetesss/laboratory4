@@ -75,6 +75,9 @@ class ShadowNodeTraits {
 
     // Inherits `YogaLayoutableShadowNode` and has a custom baseline function.
     BaselineYogaNode = 1 << 10,
+
+    // Indicates that the node must be flattened in the view hierarchy.
+    ForceViewFlattening = 1 << 11,
   };
 
   /*

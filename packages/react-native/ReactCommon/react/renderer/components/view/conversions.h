@@ -429,6 +429,11 @@ inline void fromRawValue(
     result = yoga::Display::None;
     return;
   }
+  if (stringValue == "contents") {
+    // `display: contents` is implemented on React Native side.
+    result = yoga::Display::Flex;
+    return;
+  }
   LOG(ERROR) << "Could not parse yoga::Display: " << stringValue;
 }
 
@@ -479,6 +484,34 @@ inline void fromRawValue(
     yoga::FloatOptional& result) {
   result = value.hasType<float>() ? yoga::FloatOptional((float)value)
                                   : yoga::FloatOptional();
+}
+
+inline void fromRawValue(
+    const PropsParserContext& context,
+    const RawValue& value,
+    DisplayType& result) {
+    react_native_expect(value.hasType<std::string>());
+  if (!value.hasType<std::string>()) {
+    return;
+  }
+  auto stringValue = (std::string)value;
+  if (stringValue == "flex") {
+    result = DisplayType::Flex;
+    return;
+  }
+  if (stringValue == "none") {
+    result = DisplayType::None;
+    return;
+  }
+  if (stringValue == "inline") {
+    result = DisplayType::Inline;
+    return;
+  }
+  if (stringValue == "contents") {
+    result = DisplayType::Contents;
+    return;
+  }
+  LOG(ERROR) << "Could not parse DisplayType: " << stringValue;
 }
 
 inline Float toRadians(
@@ -1384,6 +1417,19 @@ inline std::string toString(const LayoutConformance& value) {
       return "classic";
     case LayoutConformance::Strict:
       return "strict";
+  }
+}
+
+inline std::string toString(const DisplayType display) {
+  switch (display) {
+    case DisplayType::Flex:
+      return "flex";
+    case DisplayType::None:
+      return "none";
+    case DisplayType::Inline:
+      return "inline";
+    case DisplayType::Contents:
+      return "contents";
   }
 }
 

@@ -75,7 +75,11 @@ ImageProps::ImageProps(
                     rawProps,
                     "internal_analyticTag",
                     sourceProps.internal_analyticTag,
-                    {})) {}
+                    {})) {
+  if (display == DisplayType::Contents) {
+    display = DisplayType::None;
+  }
+}
 
 void ImageProps::setProp(
     const PropsParserContext& context,

@@ -194,6 +194,10 @@ AndroidTextInputProps::AndroidTextInputProps(
           "paddingStart")),
       hasPaddingEnd(CoreFeatures::enablePropIteratorSetter? sourceProps.hasPaddingEnd :
           hasValue(rawProps, sourceProps.hasPaddingEnd, "paddingEnd")) {
+
+  if (display == DisplayType::Contents) {
+    display = DisplayType::None;
+  }
 }
 
 void AndroidTextInputProps::setProp(
