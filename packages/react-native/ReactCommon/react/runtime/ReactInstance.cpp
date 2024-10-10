@@ -84,7 +84,7 @@ ReactInstance::ReactInstance(
             }
           }
         } catch (jsi::JSError& originalError) {
-          jsErrorHandler->handleFatalError(jsiRuntime, originalError);
+          jsErrorHandler->handleError(jsiRuntime, originalError, true);
         }
       });
     }
@@ -129,7 +129,7 @@ ReactInstance::ReactInstance(
       RuntimeSchedulerClock::now,
       [jsErrorHandler = jsErrorHandler_](
           jsi::Runtime& runtime, jsi::JSError& error) {
-        jsErrorHandler->handleFatalError(runtime, error);
+        jsErrorHandler->handleError(runtime, error, true);
       });
   runtimeScheduler_->setPerformanceEntryReporter(
       // FIXME: Move creation of PerformanceEntryReporter to here and guarantee
@@ -411,14 +411,53 @@ void ReactInstance::initializeRuntime(
                 return jsi::Value(false);
               }
 
-              if (isFatal) {
-                auto jsError =
-                    jsi::JSError(runtime, jsi::Value(runtime, args[0]));
-                jsErrorHandler->handleFatalError(runtime, jsError);
-                return jsi::Value(true);
+              auto Error =
+                  runtime.global().getPropertyAsFunction(runtime, "Error");
+              auto isError = args[0].isObject() && !args[0].isNull() &&
+                  args[0].asObject(runtime).instanceOf(runtime, Error);
+              auto error = isError ? args[0].getObject(runtime)
+                                   : Error.callAsConstructor(runtime, args[0]);
+              auto jsError = jsi::JSError(runtime, jsi::Value(runtime, error));
+              jsErrorHandler->handleError(runtime, jsError, isFatal);
+
+              return jsi::Value(true);
+            }));
+
+    defineReadOnlyGlobal(
+        runtime,
+        "RN$registerExceptionListener",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "registerExceptionListener"),
+            1,
+            [this, jsErrorHandler = jsErrorHandler_](
+                jsi::Runtime& runtime,
+                const jsi::Value& /*unused*/,
+                const jsi::Value* args,
+                size_t count) {
+              if (count < 1) {
+                throw jsi::JSError(
+                    runtime,
+                    "registerExceptionListener: requires 1 argument: fn");
               }
 
-              return jsi::Value(false);
+              if (!args[0].isObject() ||
+                  !args[0].getObject(runtime).isFunction(runtime)) {
+                throw jsi::JSError(
+                    runtime,
+                    "registerExceptionListener: The first argument must be a function");
+              }
+
+              errorListeners_.emplace_back(
+                  args[0].getObject(runtime).getFunction(runtime));
+
+              jsErrorHandler->registerErrorListener(
+                  [&errorListener = errorListeners_.back()](
+                      jsi::Runtime& runtime, jsi::Value data) {
+                    errorListener.call(runtime, data);
+                  });
+
+              return jsi::Value::undefined();
             }));
 
     defineReadOnlyGlobal(

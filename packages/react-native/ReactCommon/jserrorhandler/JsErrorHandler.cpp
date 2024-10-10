@@ -8,96 +8,84 @@
 #include "JsErrorHandler.h"
 #include <cxxreact/ErrorUtils.h>
 #include <glog/logging.h>
-#include <regex>
-#include <sstream>
+#include <jserrorhandler/StackTraceParser.h>
 #include <string>
-#include <vector>
 
-namespace facebook::react {
+using namespace facebook;
 
-// TODO(T198763073): Migrate away from std::regex in this function
-static JsErrorHandler::ParsedError
-parseErrorStack(const jsi::JSError& error, bool isFatal, bool isHermes) {
-  /**
-   * This parses the different stack traces and puts them into one format
-   * This borrows heavily from TraceKit (https://github.com/occ/TraceKit)
-   * This is the same regex from stacktrace-parser.js.
-   */
-  // @lint-ignore CLANGTIDY facebook-hte-StdRegexIsAwful
-  const std::regex REGEX_CHROME(
-      R"(^\s*at (?:(?:(?:Anonymous function)?|((?:\[object object\])?\S+(?: \[as \S+\])?)) )?\(?((?:file|http|https):.*?):(\d+)(?::(\d+))?\)?\s*$)");
-  // @lint-ignore CLANGTIDY facebook-hte-StdRegexIsAwful
-  const std::regex REGEX_GECKO(
-      R"(^(?:\s*([^@]*)(?:\((.*?)\))?@)?(\S.*?):(\d+)(?::(\d+))?\s*$)");
-  // @lint-ignore CLANGTIDY facebook-hte-StdRegexIsAwful
-  const std::regex REGEX_NODE(
-      R"(^\s*at (?:((?:\[object object\])?\S+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$)");
+namespace {
+int nextExceptionId() {
+  static int exceptionId = 0;
+  return exceptionId++;
+}
 
-  // Capture groups for Hermes (from parseHermesStack.js):
-  // 1. function name
-  // 2. is this a native stack frame?
-  // 3. is this a bytecode address or a source location?
-  // 4. source URL (filename)
-  // 5. line number (1 based)
-  // 6. column number (1 based) or virtual offset (0 based)
-  // @lint-ignore CLANGTIDY facebook-hte-StdRegexIsAwful
-  const std::regex REGEX_HERMES(
-      R"(^ {4}at (.+?)(?: \((native)\)?| \((address at )?(.*?):(\d+):(\d+)\))$)");
+bool isNull(jsi::Runtime& runtime, const jsi::Value& value) {
+  return jsi::Value::strictEquals(runtime, value, jsi::Value::null()) ||
+      jsi::Value::strictEquals(runtime, value, jsi::Value::undefined());
+}
 
-  std::string line;
-  std::stringstream strStream(error.getStack());
+bool isEmptyString(jsi::Runtime& runtime, const jsi::Value& value) {
+  return jsi::Value::strictEquals(
+      runtime, value, jsi::String::createFromUtf8(runtime, ""));
+}
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> frames;
+std::string toCppString(jsi::Runtime& runtime, const jsi::Value& value) {
+  return value.toString(runtime).utf8(runtime);
+}
 
-  while (std::getline(strStream, line, '\n')) {
-    auto searchResults = std::smatch{};
+jsi::Value toJSIValue(
+    jsi::Runtime& runtime,
+    const std::optional<std::string>& str) {
+  return str ? jsi::String::createFromUtf8(runtime, *str) : jsi::Value::null();
+}
 
-    if (isHermes) {
-      // @lint-ignore CLANGTIDY facebook-hte-StdRegexIsAwful
-      if (std::regex_search(line, searchResults, REGEX_HERMES)) {
-        std::string str2 = std::string(searchResults[2]);
-        if (str2.compare("native")) {
-          frames.push_back({
-              .fileName = std::string(searchResults[4]),
-              .methodName = std::string(searchResults[1]),
-              .lineNumber = std::stoi(searchResults[5]),
-              .columnNumber = std::stoi(searchResults[6]),
-          });
-        }
-      }
-    } else {
-      // @lint-ignore CLANGTIDY facebook-hte-StdRegexIsAwful
-      if (std::regex_search(line, searchResults, REGEX_GECKO)) {
-        frames.push_back({
-            .fileName = std::string(searchResults[3]),
-            .methodName = std::string(searchResults[1]),
-            .lineNumber = std::stoi(searchResults[4]),
-            .columnNumber = std::stoi(searchResults[5]),
-        });
-      } else if (
-          // @lint-ignore CLANGTIDY facebook-hte-StdRegexIsAwful
-          std::regex_search(line, searchResults, REGEX_CHROME) ||
-          // @lint-ignore CLANGTIDY facebook-hte-StdRegexIsAwful
-          std::regex_search(line, searchResults, REGEX_NODE)) {
-        frames.push_back({
-            .fileName = std::string(searchResults[2]),
-            .methodName = std::string(searchResults[1]),
-            .lineNumber = std::stoi(searchResults[3]),
-            .columnNumber = std::stoi(searchResults[4]),
-        });
-      } else {
-        continue;
-      }
-    }
+jsi::Value toJSIValue(jsi::Runtime& runtime, const std::optional<int>& num) {
+  return num ? jsi::Value(*num) : jsi::Value::null();
+}
+
+jsi::Symbol symbolFor(jsi::Runtime& runtime, const std::string& name) {
+  auto Symbol = runtime.global().getPropertyAsObject(runtime, "Symbol");
+  auto symbolFor = Symbol.getPropertyAsFunction(runtime, "for");
+  return symbolFor.callWithThis(runtime, Symbol, name).asSymbol(runtime);
+}
+
+jsi::Value getJsBuild(jsi::Runtime& runtime) {
+  auto __getBundleMetadataValue =
+      runtime.global().getProperty(runtime, "__getBundleMetadata");
+
+  if (!__getBundleMetadataValue.isObject() ||
+      !__getBundleMetadataValue.asObject(runtime).isFunction(runtime)) {
+    return jsi::Value::null();
   }
 
-  return {
-      .frames = std::move(frames),
-      .message = "EarlyJsError: " + error.getMessage(),
-      .exceptionId = 0,
-      .isFatal = isFatal,
-  };
+  auto bundleMetadataValue =
+      __getBundleMetadataValue.asObject(runtime).asFunction(runtime).call(
+          runtime);
+  if (!bundleMetadataValue.isObject()) {
+    return jsi::Value::null();
+  }
+
+  auto bundleMetadata = bundleMetadataValue.asObject(runtime);
+  auto buildNumber = bundleMetadata.getProperty(runtime, "otaBuildNumber");
+  if (!buildNumber.isString()) {
+    return jsi::Value::null();
+  }
+
+  auto Number = runtime.global().getPropertyAsFunction(runtime, "Number");
+  auto otaBuildNumber = Number.getPropertyAsFunction(runtime, "parseInt")
+                            .callWithThis(runtime, Number, buildNumber);
+  auto isFinite = Number.getPropertyAsFunction(runtime, "isFinite")
+                      .callWithThis(runtime, Number, otaBuildNumber);
+
+  if (isFinite.getBool() && otaBuildNumber.getNumber() > 0) {
+    return otaBuildNumber;
+  }
+
+  return jsi::Value::null();
 }
+} // namespace
+
+namespace facebook::react {
 
 JsErrorHandler::JsErrorHandler(JsErrorHandler::OnJsError onJsError)
     : _onJsError(std::move(onJsError)),
@@ -107,16 +95,19 @@ JsErrorHandler::JsErrorHandler(JsErrorHandler::OnJsError onJsError)
 
 JsErrorHandler::~JsErrorHandler() {}
 
-void JsErrorHandler::handleFatalError(
+void JsErrorHandler::handleError(
     jsi::Runtime& runtime,
-    jsi::JSError& error) {
+    jsi::JSError& error,
+    bool isFatal) {
   // TODO: Current error parsing works and is stable. Can investigate using
-  // REGEX_HERMES to get additional Hermes data, though it requires JS setup.
-  _hasHandledFatalError = true;
-
+  // REGEX_HERMES to get additional Hermes data, though it requires JS setup
   if (_isRuntimeReady) {
+    if (isFatal) {
+      _hasHandledFatalError = true;
+    }
+
     try {
-      handleJSError(runtime, error, true);
+      handleJSError(runtime, error, isFatal);
       return;
     } catch (jsi::JSError& e) {
       LOG(ERROR)
@@ -126,9 +117,156 @@ void JsErrorHandler::handleFatalError(
           << "Original js error: " << error.getMessage() << std::endl;
     }
   }
-  // This is a hacky way to get Hermes stack trace.
-  ParsedError parsedError = parseErrorStack(error, true, false);
-  _onJsError(parsedError);
+
+  emitError(runtime, error, isFatal);
+}
+
+void JsErrorHandler::emitError(
+    jsi::Runtime& runtime,
+    jsi::JSError& error,
+    bool isFatal) {
+  auto message = error.getMessage();
+  auto errorObj = error.value().getObject(runtime);
+  auto componentStackValue = errorObj.getProperty(runtime, "componentStack");
+  if (!isNull(runtime, componentStackValue)) {
+    message += "\n" + toCppString(runtime, componentStackValue);
+  }
+
+  auto nameValue = errorObj.getProperty(runtime, "name");
+  auto name = (isNull(runtime, nameValue) || isEmptyString(runtime, nameValue))
+      ? std::nullopt
+      : std::optional(toCppString(runtime, nameValue));
+
+  if (name && !message.starts_with(*name + ": ")) {
+    message = *name + ": " + message;
+  }
+
+  auto jsEngineValue = errorObj.getProperty(runtime, "jsEngine");
+
+  if (!isNull(runtime, jsEngineValue)) {
+    message += ", js engine: " + toCppString(runtime, jsEngineValue);
+  }
+
+  auto decoratedExtraDataKey = jsi::PropNameID::forSymbol(
+      runtime, symbolFor(runtime, "RN$ErrorExtraDataKey"));
+
+  auto initialExtraData = errorObj.getProperty(runtime, decoratedExtraDataKey);
+  auto extraData = initialExtraData.isObject()
+      ? initialExtraData.asObject(runtime)
+      : jsi::Object(runtime);
+
+  extraData.setProperty(runtime, "jsEngine", jsEngineValue);
+  extraData.setProperty(runtime, "rawStack", error.getStack());
+  extraData.setProperty(runtime, "jsBuild", getJsBuild(runtime));
+
+  auto cause = errorObj.getProperty(runtime, "cause");
+  if (!isNull(runtime, cause) && cause.isObject()) {
+    auto stackSymbols =
+        cause.asObject(runtime).getProperty(runtime, "stackSymbols");
+    extraData.setProperty(runtime, "stackSymbols", stackSymbols);
+
+    auto stackReturnAddresses =
+        cause.asObject(runtime).getProperty(runtime, "stackReturnAddresses");
+    extraData.setProperty(
+        runtime, "stackReturnAddresses", stackReturnAddresses);
+
+    auto stackElements =
+        cause.asObject(runtime).getProperty(runtime, "stackElements");
+    extraData.setProperty(runtime, "stackElements", stackElements);
+  }
+
+  auto originalMessage = message == error.getMessage()
+      ? std::nullopt
+      : std::optional(error.getMessage());
+
+  auto componentStack = !componentStackValue.isString()
+      ? std::nullopt
+      : std::optional(componentStackValue.asString(runtime).utf8(runtime));
+
+  auto data = jsi::Object(runtime);
+  data.setProperty(runtime, "message", message);
+  data.setProperty(
+      runtime, "originalMessage", toJSIValue(runtime, originalMessage));
+  data.setProperty(runtime, "name", toJSIValue(runtime, name));
+  data.setProperty(
+      runtime, "componentStack", toJSIValue(runtime, componentStack));
+
+  auto isHermes = runtime.global().hasProperty(runtime, "HermesInternal");
+  auto stackFrames = StackTraceParser::parse(isHermes, error.getStack());
+
+  auto stack = jsi::Array(runtime, stackFrames.size());
+  for (size_t i = 0; i < stackFrames.size(); i++) {
+    auto& frame = stackFrames[i];
+    auto stackFrame = jsi::Object(runtime);
+    auto file = toJSIValue(runtime, frame.file);
+    auto lineNumber = toJSIValue(runtime, frame.lineNumber);
+    auto column = toJSIValue(runtime, frame.column);
+
+    stackFrame.setProperty(runtime, "file", file);
+    stackFrame.setProperty(runtime, "methodName", frame.methodName);
+    stackFrame.setProperty(runtime, "lineNumber", lineNumber);
+    stackFrame.setProperty(runtime, "column", column);
+    stack.setValueAtIndex(runtime, i, stackFrame);
+  }
+
+  data.setProperty(runtime, "stack", stack);
+
+  auto id = nextExceptionId();
+  data.setProperty(runtime, "id", id);
+  data.setProperty(runtime, "isFatal", isFatal);
+  data.setProperty(runtime, "extraData", extraData);
+
+  auto isComponentErrorValue =
+      errorObj.getProperty(runtime, "isComponentError");
+  auto isComponentError =
+      isComponentErrorValue.isBool() && isComponentErrorValue.getBool();
+  data.setProperty(runtime, "isComponentError", isComponentError);
+
+  bool shouldPreventDefault = false;
+  auto preventDefault = jsi::Function::createFromHostFunction(
+      runtime,
+      jsi::PropNameID::forAscii(runtime, "preventDefault"),
+      0,
+      [&shouldPreventDefault](
+          jsi::Runtime& rt,
+          const jsi::Value& thisVal,
+          const jsi::Value* args,
+          size_t count) {
+        shouldPreventDefault = true;
+        return jsi::Value::undefined();
+      });
+
+  data.setProperty(runtime, "preventDefault", preventDefault);
+
+  for (auto& errorListener : _errorListeners) {
+    errorListener(runtime, jsi::Value(runtime, data));
+  }
+
+  if (shouldPreventDefault) {
+    return;
+  }
+
+  if (isFatal) {
+    _hasHandledFatalError = true;
+  }
+
+  ParsedError parsedError = {
+      .message = message,
+      .originalMessage = originalMessage,
+      .name = name,
+      .componentStack = componentStack,
+      .stack = stackFrames,
+      .id = id,
+      .isFatal = isFatal,
+      .extraData = std::move(extraData),
+  };
+
+  _onJsError(runtime, parsedError);
+}
+
+void JsErrorHandler::registerErrorListener(
+    const std::function<void(jsi::Runtime&, jsi::Value)>& errorListener) {
+  _errorListeners.push_back(errorListener);
 }
 
 bool JsErrorHandler::hasHandledFatalError() {

@@ -17,6 +17,7 @@
 #include <react/runtime/BufferedRuntimeExecutor.h>
 #include <react/runtime/JSRuntimeFactory.h>
 #include <react/runtime/TimerManager.h>
+#include <vector>
 
 namespace facebook::react {
 
@@ -76,6 +77,7 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
       callableModules_;
   std::shared_ptr<RuntimeScheduler> runtimeScheduler_;
   std::shared_ptr<JsErrorHandler> jsErrorHandler_;
+  std::vector<jsi::Function> errorListeners_;
 
   jsinspector_modern::InstanceTarget* inspectorTarget_{nullptr};
   jsinspector_modern::RuntimeTarget* runtimeInspectorTarget_{nullptr};
