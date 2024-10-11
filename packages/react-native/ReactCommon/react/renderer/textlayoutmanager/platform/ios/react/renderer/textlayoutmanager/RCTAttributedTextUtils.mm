@@ -35,6 +35,24 @@ using namespace facebook::react;
   _weakEventEmitter.reset();
 }
 
+- (BOOL)isEqual:(id)object
+{
+  // We consider the underlying EventEmitter as the identity
+  if (![object isKindOfClass:[self class]]) {
+    return NO;
+  }
+
+  auto thisEventEmitter = [self eventEmitter];
+  auto otherEventEmitter = [((RCTWeakEventEmitterWrapper *)object) eventEmitter];
+  return thisEventEmitter == otherEventEmitter;
+}
+
+- (NSUInteger)hash
+{
+  // We consider the underlying EventEmitter as the identity
+  return (NSUInteger)_weakEventEmitter.lock().get();
+}
+
 @end
 
 inline static UIFontWeight RCTUIFontWeightFromInteger(NSInteger fontWeight)
@@ -156,7 +174,8 @@ inline static UIFont *RCTEffectiveFontFromTextAttributes(const TextAttributes &t
 
 inline static UIColor *RCTEffectiveForegroundColorFromTextAttributes(const TextAttributes &textAttributes)
 {
-  UIColor *effectiveForegroundColor = RCTUIColorFromSharedColor(textAttributes.foregroundColor) ?: [UIColor blackColor];
+  UIColor *effectiveForegroundColor =
+      RCTPlatformColorFromColor(*textAttributes.foregroundColor) ?: [UIColor blackColor];
 
   if (!isnan(textAttributes.opacity)) {
     effectiveForegroundColor = [effectiveForegroundColor
@@ -168,7 +187,7 @@ inline static UIColor *RCTEffectiveForegroundColorFromTextAttributes(const TextA
 
 inline static UIColor *RCTEffectiveBackgroundColorFromTextAttributes(const TextAttributes &textAttributes)
 {
-  UIColor *effectiveBackgroundColor = RCTUIColorFromSharedColor(textAttributes.backgroundColor);
+  UIColor *effectiveBackgroundColor = RCTPlatformColorFromColor(*textAttributes.backgroundColor);
 
   if (effectiveBackgroundColor && !isnan(textAttributes.opacity)) {
     effectiveBackgroundColor = [effectiveBackgroundColor
@@ -178,7 +197,8 @@ inline static UIColor *RCTEffectiveBackgroundColorFromTextAttributes(const TextA
   return effectiveBackgroundColor ?: [UIColor clearColor];
 }
 
-NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(const TextAttributes &textAttributes)
+NSMutableDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(
+    const TextAttributes &textAttributes)
 {
   NSMutableDictionary<NSAttributedStringKey, id> *attributes = [NSMutableDictionary dictionaryWithCapacity:10];
 
@@ -256,7 +276,7 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(c
     NSUnderlineStyle style = RCTNSUnderlineStyleFromTextDecorationStyle(
         textAttributes.textDecorationStyle.value_or(TextDecorationStyle::Solid));
 
-    UIColor *textDecorationColor = RCTUIColorFromSharedColor(textAttributes.textDecorationColor);
+    UIColor *textDecorationColor = RCTPlatformColorFromColor(*textAttributes.textDecorationColor);
 
     // Underline
     if (textDecorationLineType == TextDecorationLineType::Underline ||
@@ -285,7 +305,7 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(c
     NSShadow *shadow = [NSShadow new];
     shadow.shadowOffset = CGSize{textShadowOffset.width, textShadowOffset.height};
     shadow.shadowBlurRadius = textAttributes.textShadowRadius;
-    shadow.shadowColor = RCTUIColorFromSharedColor(textAttributes.textShadowColor);
+    shadow.shadowColor = RCTPlatformColorFromColor(*textAttributes.textShadowColor);
     attributes[NSShadowAttributeName] = shadow;
   }
 
@@ -302,7 +322,7 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(c
     attributes[RCTTextAttributesAccessibilityRoleAttributeName] = [NSString stringWithUTF8String:roleStr.c_str()];
   }
 
-  return [attributes copy];
+  return attributes;
 }
 
 void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)

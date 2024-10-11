@@ -22,7 +22,7 @@ NSString *const RCTTextAttributesAccessibilityRoleAttributeName = @"Accessibilit
 /*
  * Creates `NSTextAttributes` from given `facebook::react::TextAttributes`
  */
-NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(
+NSMutableDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(
     const facebook::react::TextAttributes &textAttributes);
 
 /*

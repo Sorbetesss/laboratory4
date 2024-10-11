@@ -7,9 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-#include <react/renderer/graphics/RCTPlatformColorUtils.h>
-#include <react/renderer/textlayoutmanager/RCTFontProperties.h>
-#include <react/renderer/textlayoutmanager/RCTFontUtils.h>
+#import <react/renderer/graphics/RCTPlatformColorUtils.h>
+#import <react/renderer/textlayoutmanager/RCTFontProperties.h>
+#import <react/renderer/textlayoutmanager/RCTFontUtils.h>
 
 inline static NSTextAlignment RCTNSTextAlignmentFromTextAlignment(facebook::react::TextAlignment textAlignment)
 {
@@ -111,10 +111,4 @@ inline static NSUnderlineStyle RCTNSUnderlineStyleFromTextDecorationStyle(
     case facebook::react::TextDecorationStyle::Dotted:
       return NSUnderlinePatternDot | NSUnderlineStyleSingle;
   }
-}
-
-// TODO: this file has some duplicates method, we can remove it
-inline static UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react::SharedColor &sharedColor)
-{
-  return RCTPlatformColorFromColor(*sharedColor);
 }
