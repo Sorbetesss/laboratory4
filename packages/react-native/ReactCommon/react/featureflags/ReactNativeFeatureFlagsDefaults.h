@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b32553b00b1b1b81d4d0fdc89b05da38>>
+ * @generated SignedSource<<0d812fecaa84185ac194eb680318a4e3>>
  */
 
 /**
@@ -45,10 +45,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool enableAlignItemsBaselineOnFabricIOS() override {
     return true;
-  }
-
-  bool enableAndroidLineHeightCentering() override {
-    return false;
   }
 
   bool enableBridgelessArchitecture() override {
@@ -97,6 +93,14 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool enableLayoutAnimationsOnIOS() override {
     return true;
+  }
+
+  bool enableLineHeightCenteringOnAndroid() override {
+    return false;
+  }
+
+  bool enableLineHeightCenteringOnIOS() override {
+    return false;
   }
 
   bool enableLongTaskAPI() override {

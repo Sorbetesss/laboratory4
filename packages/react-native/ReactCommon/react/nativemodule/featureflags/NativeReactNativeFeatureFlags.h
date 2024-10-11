@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<83fc6efe6c6c5c52ffe081b9696919e1>>
+ * @generated SignedSource<<182427eab9aa2c3374b4093e12d8d4d6>>
  */
 
 /**
@@ -45,8 +45,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableAlignItemsBaselineOnFabricIOS(jsi::Runtime& runtime);
 
-  bool enableAndroidLineHeightCentering(jsi::Runtime& runtime);
-
   bool enableBridgelessArchitecture(jsi::Runtime& runtime);
 
   bool enableCleanTextInputYogaNode(jsi::Runtime& runtime);
@@ -70,6 +68,10 @@ class NativeReactNativeFeatureFlags
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
 
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
+
+  bool enableLineHeightCenteringOnAndroid(jsi::Runtime& runtime);
+
+  bool enableLineHeightCenteringOnIOS(jsi::Runtime& runtime);
 
   bool enableLongTaskAPI(jsi::Runtime& runtime);
 
