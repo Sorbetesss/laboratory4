@@ -9,12 +9,15 @@ package com.facebook.react.devsupport
 
 import android.content.Context
 import com.facebook.react.common.SurfaceDelegateFactory
+import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.packagerconnection.RequestHandler
+import com.facebook.react.runtime.BridgelessDevSupportManager
+import com.facebook.react.runtime.ReactHostImpl
 
 /**
  * A simple factory that creates instances of [DevSupportManager] implementations. Uses reflection
@@ -84,6 +87,40 @@ public class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
           PerftestDevSupportManager(applicationContext)
         }
   }
+
+  @FrameworkAPI
+  override fun create(
+      reactHost: ReactHostImpl,
+      applicationContext: Context,
+      reactInstanceManagerHelper: ReactInstanceDevHelper,
+      packagerPathForJSBundleName: String?,
+      enableOnCreate: Boolean,
+      redBoxHandler: RedBoxHandler?,
+      devBundleDownloadListener: DevBundleDownloadListener?,
+      minNumShakes: Int,
+      customPackagerCommandHandlers: MutableMap<String, RequestHandler>?,
+      surfaceDelegateFactory: SurfaceDelegateFactory?,
+      devLoadingViewManager: DevLoadingViewManager?,
+      pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
+      useDevSupport: Boolean
+  ): DevSupportManager =
+      if (!useDevSupport) {
+        ReleaseDevSupportManager()
+      } else {
+        BridgelessDevSupportManager(
+            reactHost,
+            applicationContext,
+            reactInstanceManagerHelper,
+            packagerPathForJSBundleName,
+            enableOnCreate,
+            redBoxHandler,
+            devBundleDownloadListener,
+            minNumShakes,
+            customPackagerCommandHandlers,
+            surfaceDelegateFactory,
+            devLoadingViewManager,
+            pausedInDebuggerOverlayManager)
+      }
 
   private companion object {
     private const val DEVSUPPORT_IMPL_PACKAGE = "com.facebook.react.devsupport"
