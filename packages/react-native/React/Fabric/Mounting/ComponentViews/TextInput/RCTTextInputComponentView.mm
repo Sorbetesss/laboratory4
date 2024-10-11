@@ -9,6 +9,7 @@
 
 #import <react/renderer/components/iostextinput/TextInputComponentDescriptor.h>
 #import <react/renderer/textlayoutmanager/RCTAttributedTextUtils.h>
+#import <react/renderer/textlayoutmanager/RCTTextPrimitivesConversions.h>
 #import <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
 #import <React/RCTBackedTextInputViewProtocol.h>
@@ -61,6 +62,13 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
    */
   BOOL _comingFromJS;
   BOOL _didMoveToWindow;
+
+  /*
+   * Newly initialized default typing attributes contain a no-op NSParagraphStyle and NSShadow. These cause inequality
+   * between the AttributedString backing the input and those generated from state. We store these attributes to make
+   * later comparison insensitive to them.
+   */
+  NSDictionary<NSAttributedStringKey, id> *_defaultTypingAttributes;
 }
 
 #pragma mark - UIView overrides
@@ -79,9 +87,25 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
     [self addSubview:_backedTextInputView];
     [self initializeReturnKeyType];
+
+    _defaultTypingAttributes = [_backedTextInputView.typingAttributes copy];
   }
 
   return self;
+}
+
+- (void)updateEventEmitter:(const EventEmitter::Shared &)eventEmitter
+{
+  [super updateEventEmitter:eventEmitter];
+
+  NSMutableDictionary<NSAttributedStringKey, id> *defaultAttributes =
+      [_backedTextInputView.defaultTextAttributes mutableCopy];
+
+  RCTWeakEventEmitterWrapper *eventEmitterWrapper = [RCTWeakEventEmitterWrapper new];
+  eventEmitterWrapper.eventEmitter = _eventEmitter;
+  defaultAttributes[RCTAttributedStringEventEmitterKey] = eventEmitterWrapper;
+
+  _backedTextInputView.defaultTextAttributes = defaultAttributes;
 }
 
 - (void)didMoveToWindow
@@ -236,8 +260,11 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   }
 
   if (newTextInputProps.textAttributes != oldTextInputProps.textAttributes) {
-    _backedTextInputView.defaultTextAttributes =
+    NSMutableDictionary<NSAttributedStringKey, id> *defaultAttributes =
         RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes(RCTFontSizeMultiplier()));
+    defaultAttributes[RCTAttributedStringEventEmitterKey] =
+        _backedTextInputView.defaultTextAttributes[RCTAttributedStringEventEmitterKey];
+    _backedTextInputView.defaultTextAttributes = [defaultAttributes copy];
   }
 
   if (newTextInputProps.selectionColor != oldTextInputProps.selectionColor) {
@@ -418,6 +445,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
 - (void)textInputDidChangeSelection
 {
+  [self _updateTypingAttributes];
   if (_comingFromJS) {
     return;
   }
@@ -674,7 +702,24 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetStart, 0)];
   }
   [self _restoreTextSelection];
+  [self _updateTypingAttributes];
   _lastStringStateWasUpdatedWith = attributedString;
+}
+
+// Ensure that newly typed text will inherit any custom attributes. We follow the logic of RN Android, where attributes
+// to the left of the cursor are copied into new text, unless we are at the start of the field, in which case we will
+// copy the attributes from text to the right. This allows consistency between backed input and new AttributedText
+// https://github.com/facebook/react-native/blob/3102a58df38d96f3dacef0530e4dbb399037fcd2/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/text/internal/span/SetSpanOperation.kt#L30
+- (void)_updateTypingAttributes
+{
+  if (_backedTextInputView.attributedText.length > 0) {
+    NSUInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                           toPosition:_backedTextInputView.selectedTextRange.start];
+
+    NSUInteger samplePoint = offsetStart == 0 ? 0 : offsetStart - 1;
+    _backedTextInputView.typingAttributes = [_backedTextInputView.attributedText attributesAtIndex:samplePoint
+                                                                                    effectiveRange:NULL];
+  }
 }
 
 - (void)_setMultiline:(BOOL)multiline
@@ -706,6 +751,10 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
 - (BOOL)_textOf:(NSAttributedString *)newText equals:(NSAttributedString *)oldText
 {
+  if (![newText.string isEqualToString:oldText.string]) {
+    return NO;
+  }
+
   // When the dictation is running we can't update the attributed text on the backed up text view
   // because setting the attributed string will kill the dictation. This means that we can't impose
   // the settings on a dictation.
@@ -732,10 +781,107 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
       _backedTextInputView.markedTextRange || _backedTextInputView.isSecureTextEntry || fontHasBeenUpdatedBySystem;
 
   if (shouldFallbackToBareTextComparison) {
-    return ([newText.string isEqualToString:oldText.string]);
+    return YES;
   } else {
-    return ([newText isEqualToAttributedString:oldText]);
+    return [self _areAttributesEffectivelyEqual:oldText newText:newText];
   }
+}
+
+- (BOOL)_areAttributesEffectivelyEqual:(NSAttributedString *)oldText newText:(NSAttributedString *)newText
+{
+  // We check that for every fragment in the old string
+  // 1. A fragment of the same range exists in the new string
+  // 2. The attributes of each matching fragment are the same, ignoring those which match the always set default typing
+  // attributes
+  __block BOOL areAttriubtesEqual = YES;
+  [oldText enumerateAttributesInRange:NSMakeRange(0, oldText.length)
+                              options:0
+                           usingBlock:^(NSDictionary<NSAttributedStringKey, id> *attrs, NSRange range, BOOL *stop) {
+                             [newText
+                                 enumerateAttributesInRange:range
+                                                    options:0
+                                                 usingBlock:^(
+                                                     NSDictionary<NSAttributedStringKey, id> *innerAttrs,
+                                                     NSRange innerRange,
+                                                     BOOL *innerStop) {
+                                                   if (!NSEqualRanges(range, innerRange)) {
+                                                     areAttriubtesEqual = NO;
+                                                     *innerStop = YES;
+                                                     *stop = YES;
+                                                     return;
+                                                   }
+
+                                                   NSMutableDictionary<NSAttributedStringKey, id> *normAttrs =
+                                                       [attrs mutableCopy];
+                                                   NSMutableDictionary<NSAttributedStringKey, id> *normInnerAttrs =
+                                                       [innerAttrs mutableCopy];
+
+                                                   __unused NSDictionary *currentTypingAttributes =
+                                                       _backedTextInputView.typingAttributes;
+                                                   __unused NSDictionary *defaultAttributes =
+                                                       _backedTextInputView.defaultTextAttributes;
+
+                                                   for (NSAttributedStringKey key in _defaultTypingAttributes) {
+                                                     id defaultAttr = _defaultTypingAttributes[key];
+                                                     if ([normAttrs[key] isEqual:defaultAttr] ||
+                                                         (key == NSParagraphStyleAttributeName &&
+                                                          [self _areParagraphStylesEffectivelyEqual:normAttrs[key]
+                                                                                              other:defaultAttr])) {
+                                                       [normAttrs removeObjectForKey:key];
+                                                     }
+                                                     if ([normInnerAttrs[key] isEqual:defaultAttr] ||
+                                                         (key == NSParagraphStyleAttributeName &&
+                                                          [self _areParagraphStylesEffectivelyEqual:normInnerAttrs[key]
+                                                                                              other:defaultAttr])) {
+                                                       [normInnerAttrs removeObjectForKey:key];
+                                                     }
+                                                   }
+
+                                                   if (![normAttrs isEqualToDictionary:normInnerAttrs]) {
+                                                     areAttriubtesEqual = NO;
+                                                     *innerStop = YES;
+                                                     *stop = YES;
+                                                   }
+                                                 }];
+                           }];
+
+  return areAttriubtesEqual;
+}
+
+// The default NSParagraphStyle included as part of typingAttributes will eventually resolve "natural" directions to
+// physical direction, so we should compare resolved directions
+- (BOOL)_areParagraphStylesEffectivelyEqual:(NSParagraphStyle *)style1 other:(NSParagraphStyle *)style2
+{
+  NSMutableParagraphStyle *mutableStyle1 = [style1 mutableCopy];
+  NSMutableParagraphStyle *mutableStyle2 = [style2 mutableCopy];
+
+  const auto &textAttributes = static_cast<const TextInputProps &>(*_props).textAttributes;
+
+  auto layoutDirection = textAttributes.layoutDirection.value_or(LayoutDirection::LeftToRight);
+  if (mutableStyle1.alignment == NSTextAlignmentNatural) {
+    mutableStyle1.alignment =
+        layoutDirection == LayoutDirection::LeftToRight ? NSTextAlignmentLeft : NSTextAlignmentRight;
+  }
+  if (mutableStyle2.alignment == NSTextAlignmentNatural) {
+    mutableStyle2.alignment =
+        layoutDirection == LayoutDirection::LeftToRight ? NSTextAlignmentLeft : NSTextAlignmentRight;
+  }
+
+  auto baseWritingDirection = [&]() {
+    if (textAttributes.baseWritingDirection.has_value()) {
+      return RCTNSWritingDirectionFromWritingDirection(textAttributes.baseWritingDirection.value());
+    } else {
+      return [NSParagraphStyle defaultWritingDirectionForLanguage:nil];
+    }
+  }();
+  if (mutableStyle1.baseWritingDirection == NSWritingDirectionNatural) {
+    mutableStyle1.baseWritingDirection = baseWritingDirection;
+  }
+  if (mutableStyle2.baseWritingDirection == NSWritingDirectionNatural) {
+    mutableStyle2.baseWritingDirection = baseWritingDirection;
+  }
+
+  return [mutableStyle1 isEqual:mutableStyle2];
 }
 
 - (SubmitBehavior)getSubmitBehavior
