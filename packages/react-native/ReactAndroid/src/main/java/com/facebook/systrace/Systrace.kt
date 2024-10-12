@@ -32,12 +32,12 @@ public object Systrace {
   @JvmStatic public fun traceInstant(tag: Long, title: String?, scope: EventScope?): Unit = Unit
 
   @JvmStatic
-  public fun traceSection(tag: Long, sectionName: String, block: () -> T) {
-    beginSection(sectionName)
+  public fun <T> traceSection(tag: Long, sectionName: String, block: () -> T): T {
+    beginSection(tag, sectionName)
     try {
       return block()
     } finally {
-      endSection(sectionName)
+      endSection(tag)
     }
   }
 
